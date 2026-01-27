@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산대 80년, 데이터가 기억하는 시대정신</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- WordCloud2.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .font-serif { font-family: 'Noto Serif KR', serif; }
+
+        .tab-active { border-bottom: 4px solid; font-weight: 700; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Era Specific Themes */
+        .theme-past .accent-color { color: #b91c1c; }
+        .theme-past .bg-accent { background-color: #b91c1c; }
+        .theme-past .btn-toggle-active { background-color: #b91c1c; color: white; border-color: #b91c1c; }
+        .theme-past .emotion-highlight { color: #7f1d1d; background-color: #fca5a5; padding: 0 4px; border-radius: 4px; font-weight: 800; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .theme-past .modal-header { background-color: #b91c1c; }
+        .theme-past .summary-box { border-left-color: #b91c1c; background: linear-gradient(to right, #fff1f2, #fff); }
+        .theme-past .section-title { color: #b91c1c; }
+        .theme-past .creative-badge { background-color: #fca5a5; color: #7f1d1d; }
+
+        .theme-present .accent-color { color: #0369a1; }
+        .theme-present .bg-accent { background-color: #0369a1; }
+        .theme-present .btn-toggle-active { background-color: #0369a1; color: white; border-color: #0369a1; }
+        .theme-present .emotion-highlight { color: #0c4a6e; background-color: #bae6fd; padding: 0 4px; border-radius: 4px; font-weight: 800; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .theme-present .modal-header { background-color: #0369a1; }
+        .theme-present .summary-box { border-left-color: #0369a1; background: linear-gradient(to right, #f0f9ff, #fff); }
+        .theme-present .section-title { color: #0369a1; }
+        .theme-present .creative-badge { background-color: #bae6fd; color: #0c4a6e; }
+
+        .theme-future .accent-color { color: #059669; }
+        .theme-future .bg-accent { background-color: #059669; }
+        .theme-future .btn-toggle-active { background-color: #059669; color: white; border-color: #059669; }
+        .theme-future .emotion-highlight { color: #064e3b; background-color: #a7f3d0; padding: 0 4px; border-radius: 4px; font-weight: 800; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .theme-future .modal-header { background-color: #059669; }
+        .theme-future .summary-box { border-left-color: #059669; background: linear-gradient(to right, #f0fdf4, #fff); }
+        .theme-future .section-title { color: #059669; }
+        .theme-future .creative-badge { background-color: #a7f3d0; color: #064e3b; }
+
+        .keyword-bold { font-weight: 900; color: #1f2937; }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+
+        .toggle-checkbox:checked { right: 0; border-color: #4B5563; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #4B5563; }
+
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow-x: hidden; overflow-y: visible !important; }
+
+        /* Tooltip Style for WordCloud */
+        #word-cloud-tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            transform: translate(-50%, -150%);
+        }
+
+        .creative-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .creative-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Tooltip Element -->
+    <div id="word-cloud-tooltip"></div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-gray-800 dark:border-b dark:border-gray-700 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-900 text-white flex items-center justify-center font-bold rounded-lg shadow-md">DH</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">부산대 80년, 데이터가 기억하는 시대정신</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Data Analytics by Team PNU (경영학과)</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Era Experience Link -->
+                <a href="experience.html" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors flex items-center bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-lg">
+                    <i data-lucide="play-circle" class="w-4 h-4 mr-2"></i> 시대 체험하기
+                </a>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none" title="다크 모드 전환">
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block text-yellow-300"></i>
+                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden text-gray-600"></i>
+                </button>
+
+                <div class="text-right hidden md:block">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Data Coverage</p>
+                    <p class="text-sm font-bold text-gray-700 dark:text-gray-200">1946 - 2030+</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- Intro Section -->
+        <section class="mb-10 text-center">
+            <h2 class="text-3xl font-extrabold mb-4 text-gray-900 dark:text-white">데이터는 역사의 <span class="text-blue-900 dark:text-blue-400">감정</span>을 기억합니다</h2>
+            <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                데이터 분석의 핵심은 노이즈를 제거하는 것입니다.<br>
+                우리는 <strong>'불용어 처리(Stopword Removal)'</strong> 기법을 통해 일반 명사를 걷어내고 시대의 진짜 모습을 찾았습니다.
+            </p>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center mb-8 border-b border-gray-200 dark:border-gray-700">
+            <button onclick="switchTab('past')" id="tab-past" class="px-6 py-4 text-base leading-tight hover:text-red-700 transition-colors tab-active border-red-700 text-red-700 h-auto dark:hover:text-red-400">
+                <span class="block text-sm font-bold mb-1 opacity-80">1946-1999:</span>
+                <span class="block font-bold text-lg">과거 (연대와 저항)</span>
+            </button>
+            <button onclick="switchTab('present')" id="tab-present" class="px-6 py-4 text-base leading-tight text-gray-500 hover:text-blue-700 transition-colors h-auto dark:text-gray-400 dark:hover:text-blue-400">
+                <span class="block text-sm font-bold mb-1 opacity-80">2000-2025:</span>
+                <span class="block font-bold text-lg">현재 (개인과 경쟁)</span>
+            </button>
+            <button onclick="switchTab('future')" id="tab-future" class="px-6 py-4 text-base leading-tight text-gray-500 hover:text-green-700 transition-colors h-auto dark:text-gray-400 dark:hover:text-green-400">
+                <span class="block text-sm font-bold mb-1 opacity-80">2026 이후:</span>
+                <span class="block font-bold text-lg">미래 (혁신과 융합)</span>
+            </button>
+        </div>
+
+        <!-- Era Summary Sentence -->
+        <div id="era-summary-container" class="max-w-4xl mx-auto mb-10 fade-in theme-past">
+            <div class="summary-box border-l-8 p-6 rounded-r-lg shadow-sm flex items-center bg-white dark:bg-gray-800 transition-colors duration-300">
+                <div class="text-4xl mr-4 opacity-30 text-gray-400 dark:text-gray-500">❝</div>
+                <div>
+                    <p id="era-summary-text" class="text-xl md:text-2xl font-serif font-bold text-gray-800 dark:text-gray-100 leading-relaxed">
+                        <!-- Summary text will be injected here -->
+                    </p>
+                </div>
+                <div class="text-4xl ml-4 opacity-30 text-gray-400 dark:text-gray-500 self-end">❞</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Layout -->
+        <div id="dashboard-content" class="grid grid-cols-1 gap-8 fade-in theme-past pb-10">
+
+            <!-- Section 1: Keyword Analysis -->
+            <div class="w-full bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col min-h-[600px] dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <div class="flex items-center mb-4 md:mb-0">
+                        <h3 class="text-xl font-bold border-l-4 pl-3 border-current accent-color mr-4">📊 핵심 명사 빈도 분석</h3>
+
+                        <!-- Stopword Toggle -->
+                        <div class="flex items-center bg-gray-100 rounded-full p-1 px-1 shadow-inner border border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+                            <span class="text-xs font-bold text-gray-400 px-3">Raw Data</span>
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="stopword-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 border-gray-300" checked onchange="toggleDataMode()"/>
+                                <label for="stopword-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer transition-colors duration-300"></label>
+                            </div>
+                            <span class="text-xs font-bold px-2 accent-color">불용어 제거됨</span>
+                        </div>
+                    </div>
+
+                    <!-- View Toggle Buttons -->
+                    <div class="flex bg-gray-100 p-1 rounded-lg dark:bg-gray-700">
+                        <button onclick="switchView('chart')" id="btn-chart" class="px-4 py-2 text-sm rounded-md font-medium transition-all btn-toggle-active shadow-sm">
+                            그래프 (Chart)
+                        </button>
+                        <button onclick="switchView('cloud')" id="btn-cloud" class="px-4 py-2 text-sm rounded-md font-medium text-gray-500 hover:text-gray-300 transition-all">
+                            워드 클라우드 (Visual)
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-500 mb-4 transition-all duration-300 dark:text-gray-400" id="analysis-desc">
+                    <!-- Description injected via JS -->
+                </p>
+
+                <!-- Chart View (Keep BG white for visibility) -->
+                <div id="chart-view" class="relative flex-grow w-full h-full transition-opacity duration-300 min-h-[400px] bg-white rounded-lg p-2">
+                    <canvas id="frequencyChart"></canvas>
+                </div>
+
+                <!-- Word Cloud View (Keep BG white for visibility) -->
+                <div id="cloud-view" class="hidden relative w-full h-full flex items-center justify-center p-4 transition-opacity duration-300 bg-white rounded-lg min-h-[500px]">
+                    <!-- Canvas will be created here via JS -->
+                </div>
+            </div>
+
+            <!-- Section 2: Deep Dive Sentiment Analysis -->
+            <div class="w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-100 flex flex-col md:flex-row gap-8 dark:bg-gray-800 dark:border-gray-700">
+                <div class="w-full md:w-1/2">
+                    <h3 class="text-xl font-bold mb-6 border-l-4 pl-3 border-current accent-color flex justify-between items-center">
+                        <span>❤️ 정서 강도 심층 분석</span>
+                    </h3>
+                    <div id="sentiment-meters" class="space-y-6">
+                        <!-- Meters generated by JS -->
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 flex flex-col relative">
+                     <h3 class="text-xl font-bold mb-4 flex items-center text-gray-700 dark:text-gray-200">
+                        <span class="mr-2">💡</span> 분석 코멘트 (Analyst Note)
+                    </h3>
+                    <div class="flex-grow bg-gray-50 p-6 rounded-xl border border-gray-100 h-full relative dark:bg-gray-900 dark:border-gray-700">
+                        <div id="analyst-note" class="text-base text-gray-700 leading-relaxed h-full overflow-y-auto custom-scroll pb-10 dark:text-gray-300">
+                            <!-- Comment generated by JS -->
+                        </div>
+
+                        <button onclick="toggleModal('reason')" class="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-100 transition-colors group dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600" title="분석 근거 보기">
+                            <span class="flex items-center text-xs font-bold text-gray-500 mr-1 group-hover:text-gray-700 dark:text-gray-300 dark:group-hover:text-white">Why?</span>
+                            <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-300 dark:group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Data to Creative (Static List) -->
+            <div id="creative-section" class="w-full mt-24 fade-in">
+                <div class="text-center mb-16">
+                    <span class="inline-block py-1 px-3 rounded-full bg-gray-900 text-white text-xs font-bold mb-4 tracking-wider uppercase dark:bg-gray-700">Synthesis & Application</span>
+                    <h2 class="text-4xl font-black mb-6 text-gray-900 leading-tight dark:text-white">
+                        데이터 분석이 <span class="text-indigo-600 dark:text-indigo-400">공감</span>과 <span class="text-indigo-600 dark:text-indigo-400">체험</span>이 되다
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed dark:text-gray-400">
+                        우리는 80년의 데이터를 분석하는 데 그치지 않고, 각 시대의 정신을 가장 잘 대변하는 <strong>체험형 콘텐츠</strong>로 재탄생시켰습니다.<br>
+                        데이터가 가리키는 그 시절의 공기를 직접 느껴보세요.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+
+                    <!-- Past Card -->
+                    <div class="creative-card bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                        <div class="h-3 bg-red-600"></div>
+                        <div class="p-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold uppercase tracking-wider dark:bg-red-900 dark:text-red-300">Past (과거)</span>
+                                <i data-lucide="book-open" class="w-6 h-6 text-red-600 dark:text-red-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3 dark:text-white">그날의 함성</h3>
+                            <p class="text-xs text-gray-500 font-mono mb-4 bg-gray-50 p-2 rounded border border-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400">Keyword: 민주, 항쟁, 연대</p>
+                            <p class="text-gray-600 mb-6 text-sm leading-relaxed dark:text-gray-300">
+                                '우리'와 '연대'라는 키워드에서 영감을 받아, 대사 없이도 그 시절의 뜨거움을 느낄 수 있는 <strong>과거 체험형 사이트</strong>입니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Present Card -->
+                    <div class="creative-card bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                        <div class="h-3 bg-blue-600"></div>
+                        <div class="p-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider dark:bg-blue-900 dark:text-blue-300">Present (현재)</span>
+                                <i data-lucide="monitor-play" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3 dark:text-white">치열한 새벽</h3>
+                            <p class="text-xs text-gray-500 font-mono mb-4 bg-gray-50 p-2 rounded border border-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400">Keyword: 취업, 경쟁, 갓생</p>
+                            <p class="text-gray-600 mb-6 text-sm leading-relaxed dark:text-gray-300">
+                                '취업'과 '경쟁'의 치열함 속에서도, '동아리'와 '활동'을 통해 낭만과 균형을 잃지 않는 <strong>현재 체험형 사이트</strong>입니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Future Card -->
+                    <div class="creative-card bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                        <div class="h-3 bg-green-600"></div>
+                        <div class="p-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider dark:bg-green-900 dark:text-green-300">Future (미래)</span>
+                                <i data-lucide="sparkles" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3 dark:text-white">경계 없는 캠퍼스</h3>
+                            <p class="text-xs text-gray-500 font-mono mb-4 bg-gray-50 p-2 rounded border border-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400">Keyword: 혁신, 융합, 글로컬</p>
+                            <p class="text-gray-600 mb-6 text-sm leading-relaxed dark:text-gray-300">
+                                '혁신'과 '지역 상생' 비전을 바탕으로, 대학과 도시의 경계가 허물어진 미래의 모습을 그린 <strong>미래 체험형 사이트</strong>입니다.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="text-center">
+                    <a href="experience.html" target="_blank" class="inline-flex items-center justify-center gap-3 px-12 py-5 rounded-full font-bold text-white text-xl shadow-2xl transform transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl bg-gray-900 hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 group">
+                        <span>그때 그 시대, 체험형 사이트로 만나기</span>
+                        <i data-lucide="arrow-right-circle" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal (Reason) -->
+    <div id="reason-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal('reason')"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[90vh] dark:bg-gray-800">
+            <div class="modal-header py-4 text-left px-6 text-white font-bold text-lg flex justify-between items-center" id="modal-header-bg">
+                <span id="modal-title">분석 근거 (Why?)</span>
+                <div class="cursor-pointer z-50" onclick="toggleModal('reason')">
+                    <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+                </div>
+            </div>
+            <div class="modal-content py-6 text-left px-6">
+                <p class="text-gray-700 leading-relaxed text-base dark:text-gray-200" id="modal-body"></p>
+            </div>
+            <div class="flex justify-end pt-2 pb-6 px-6">
+                <button class="px-6 py-2 bg-gray-500 rounded-lg text-white hover:bg-gray-400 transition-colors dark:bg-gray-600 dark:hover:bg-gray-500" onclick="toggleModal('reason')">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        let currentEra = 'past';
+        let isFiltered = true;
+        let myChart = null;
+
+        const db = {
+            past: {
+                themeColor: '#b91c1c',
+                borderColor: 'rgba(185, 28, 28, 0.6)',
+                bgColor: 'rgba(185, 28, 28, 0.2)',
+                wordColors: ['#b91c1c', '#991b1b', '#ef4444', '#f87171', '#7f1d1d'],
+                summary: "시대적 소명 앞에 하나 되었던, 그 시절 <span class='accent-color'>뜨거운 연대</span>의 기록",
+                raw: {
+                    labels: ['대학', '부산대학교', '민주', '부산', '부마항쟁', '항쟁', '우리', '부마', '학생', '기록'],
+                    data: [95, 55, 50, 47, 36, 34, 29, 27, 24, 24],
+                    desc: "1946-1999년 데이터 (전처리 전): '대학', '부산' 등 일반 명사가 상위권을 차지합니다."
+                },
+                filtered: {
+                    labels: ['민주', '부마항쟁', '항쟁', '우리', '부마', '기록', '역사', '민주화', '기념', '자유'],
+                    data: [50, 36, 34, 29, 27, 24, 24, 22, 20, 12],
+                    desc: "1946-1999년 데이터 (불용어 제거 후): 노이즈가 사라지자 '민주', '항쟁' 등 시대 정신이 명확히 드러납니다."
+                },
+                wordList: [
+                    ['민주', 50], ['부마항쟁', 36], ['항쟁', 34], ['우리', 29], ['부마', 27],
+                    ['학생', 24], ['기록', 24], ['역사', 24], ['민주화', 22], ['기념', 20],
+                    ['자유', 18], ['대동제', 15], ['막걸리', 14], ['통기타', 14], ['독재타도', 15],
+                    ['선언문', 18], ['시위', 15], ['열정', 12], ['소명', 10], ['동지', 10]
+                ],
+                analystNote: `
+                    일반 명사('대학', '부산' 등)를 제거하자 <span class='keyword-bold'>'민주'</span>와 <span class='keyword-bold'>'항쟁'</span>이 명확한 1순위 키워드로 부상했습니다.<br><br>
+                    특히 <span class='keyword-bold'>'우리(We)'</span>라는 공동체적 대명사가 <span class='keyword-bold'>'자유'</span>, <span class='keyword-bold'>'역사'</span>와 함께 상위권에 랭크된 것은, 당시 부산대생들의 정체성이 개인의 학업보다는 <span class='emotion-highlight'>시대적 소명</span>과 <span class='emotion-highlight'>뜨거운 연대</span>에 있었음을 데이터로 증명합니다.
+                `,
+                reason: `
+                    1946년부터 1999년까지 반세기가 넘는 긴 기간이지만, 데이터상에서 가장 압도적인 빈도와 감정 강도를 보인 시점(Peak Point)은 1970~80년대입니다. 이는 부산대의 정체성이 물리적 시간의 길이보다 <span class='emotion-highlight'>시대적 소명</span>과 <span class='emotion-highlight'>뜨거운 연대</span>라는 가장 강렬했던 집단적 기억에 의해 정의되고 있음을 시사합니다.
+                `,
+                sentiments: [
+                    { label: "공동체 의식 (Solidarity)", score: 95, color: "bg-red-600" },
+                    { label: "저항/분노 (Resistance)", score: 88, color: "bg-orange-600" },
+                    { label: "낭만/유대 (Romance)", score: 70, color: "bg-yellow-500" },
+                    { label: "개인주의 (Individualism)", score: 20, color: "bg-gray-300" }
+                ]
+            },
+            present: {
+                themeColor: '#0369a1',
+                borderColor: 'rgba(3, 105, 161, 0.6)',
+                bgColor: 'rgba(3, 105, 161, 0.2)',
+                wordColors: ['#0369a1', '#1d4ed8', '#3b82f6', '#60a5fa', '#1e40af'],
+                summary: "치열한 생존 경쟁 속에서도 나만의 <span class='accent-color'>균형</span>과 <span class='accent-color'>소소한 행복</span>을 찾아가는 여정",
+                raw: {
+                    labels: ['부산', '취업', '모집', '지원', '참여', '신청', '프로그램', '준비', '활동', '교육'],
+                    data: [204, 131, 108, 108, 87, 83, 83, 76, 72, 65],
+                    desc: "2000-2025년 데이터 (전처리 전): '부산', '프로그램' 등 기능적 단어가 많이 보입니다."
+                },
+                filtered: {
+                    labels: ['취업', '모집', '지원', '참여', '신청', '준비', '활동', '면접', '관심', '스펙', '동아리'],
+                    data: [131, 108, 108, 87, 83, 76, 72, 54, 49, 45, 31],
+                    desc: "2000-2025년 데이터 (불용어 제거 후): '취업'과 함께 '활동', '관심' 등 밸런스를 찾는 키워드도 확인됩니다."
+                },
+                wordList: [
+                    ['취업', 80], ['모집', 65], ['지원', 65], ['참여', 55], ['신청', 50],
+                    ['프로그램', 50], ['준비', 45], ['활동', 45], ['면접', 35], ['관심', 30],
+                    ['스펙', 30], ['경험', 28], ['갓생', 25], ['인턴', 22], ['자격증', 20],
+                    ['동아리', 20], ['소확행', 18], ['스터디', 15], ['알바', 10], ['힐링', 12]
+                ],
+                analystNote: `
+                    일상적인 단어를 걷어내니 현재의 시대정신이 <span class='keyword-bold'>'생존'</span>과 <span class='keyword-bold'>'경쟁'</span>임이 드러나지만, 동시에 <span class='keyword-bold'>'활동'</span>과 <span class='keyword-bold'>'동아리'</span>를 통해 캠퍼스 라이프를 즐기려는 모습도 확인됩니다.<br><br>
+                    <span class='keyword-bold'>'취업', '스펙'</span> 등 치열한 미래 준비 속에서도, <span class='keyword-bold'>'참여', '활동'</span> 키워드의 높은 빈도는 대학 생활의 낭만을 놓치지 않으려는 <span class='emotion-highlight'>균형 잡힌 태도</span>와 <span class='emotion-highlight'>소소한 즐거움</span>을 보여줍니다.
+                `,
+                reason: `
+                    <span class='keyword-bold'>'취업'</span>, <span class='keyword-bold'>'면접'</span> 등 경쟁 관련 단어가 상위권을 차지하지만, <span class='keyword-bold'>'활동'</span>(72회), <span class='keyword-bold'>'동아리'</span>(31회) 등의 키워드 또한 유의미한 빈도로 등장합니다. 이는 현재의 청년들이 무조건적인 경쟁에만 매몰되기보다, 자기 계발과 취미 생활의 균형을 맞추며 <span class='emotion-highlight'>'갓생(God+Life)'</span>을 살기 위해 노력하고 있음을 시사합니다.
+                `,
+                sentiments: [
+                    { label: "현실적 불안 (Anxiety)", score: 85, color: "bg-blue-600" },
+                    { label: "경쟁 심리 (Competition)", score: 80, color: "bg-blue-500" },
+                    { label: "자기 계발/활동 (Self-development)", score: 75, color: "bg-indigo-500" },
+                    { label: "소소한 행복 (Healing)", score: 60, color: "bg-teal-400" }
+                ]
+            },
+            future: {
+                themeColor: '#059669',
+                borderColor: 'rgba(5, 150, 105, 0.6)',
+                bgColor: 'rgba(5, 150, 105, 0.2)',
+                wordColors: ['#059669', '#047857', '#10b981', '#34d399', '#065f46'],
+                summary: "경계를 허물고 지역과 세계를 잇는, 글로컬 허브로의 <span class='accent-color'>희망찬 도약</span>",
+                raw: {
+                    labels: ['대학', '교육', '부산', '지역', '혁신', '연구', '추진', '구축', '지원', '통합'],
+                    data: [220, 125, 124, 91, 62, 53, 52, 50, 49, 45],
+                    desc: "2026년 이후 데이터 (전처리 전): '대학', '교육' 등 일반적인 정책 용어가 많습니다."
+                },
+                filtered: {
+                    labels: ['지역', '혁신', '연구', '통합', '전략', '기반', '역량', '산업', '융합', '기술'],
+                    data: [91, 62, 53, 45, 45, 44, 40, 40, 28, 27],
+                    desc: "2026년 이후 데이터 (불용어 제거 후): '지역', '혁신', '융합' 등 미래 비전이 선명해집니다."
+                },
+                wordList: [
+                    ['혁신', 62], ['연구', 53], ['추진', 52], ['구축', 50], ['통합', 45],
+                    ['전략', 45], ['기반', 44], ['역량', 40], ['산업', 40], ['융합', 28],
+                    ['기술', 27], ['글로컬', 50], ['AI', 35], ['스마트', 30], ['플랫폼', 25],
+                    ['네트워크', 22], ['친환경', 20], ['창업', 20], ['도약', 30]
+                ],
+                analystNote: `
+                    미래 데이터에서는 행정 용어를 제외하자 <span class='keyword-bold'>'지역(Local)'</span>과 <span class='keyword-bold'>'혁신(Innovation)'</span>이 핵심 가치로 남았습니다.<br><br>
+                    과거의 '저항', 현재의 '생존'을 넘어 미래는 <span class='keyword-bold'>'통합'</span>과 <span class='keyword-bold'>'융합'</span>을 지향하고 있습니다. 특히 <span class='keyword-bold'>'기술', '산업'</span> 키워드의 등장은 대학이 상아탑에 머물지 않고 지역 사회의 성장을 주도하는 <span class='emotion-highlight'>글로컬 허브로의 도약</span>과 <span class='emotion-highlight'>희망찬 기대</span>를 보여줍니다.
+                `,
+                reason: `
+                    특히 <span class='keyword-bold'>'기술'</span>, <span class='keyword-bold'>'산업'</span> 키워드의 등장은 대학이 단순히 학문의 상아탑에 머물지 않고, 지역 사회의 성장을 주도하는 <span class='emotion-highlight'>'글로컬 허브로의 도약'</span>과 이에 대한 구성원들의 <span class='emotion-highlight'>'희망찬 기대'</span>를 반영합니다. 판타지적인 SF가 아니라, 데이터가 입증하는 <span class='keyword-bold'>'가까운 미래(Near Future)'</span>의 실현 가능한 비전입니다.
+                `,
+                sentiments: [
+                    { label: "혁신 의지 (Innovation)", score: 92, color: "bg-emerald-600" },
+                    { label: "희망/기대 (Hope)", score: 85, color: "bg-green-500" },
+                    { label: "융합/연결 (Connectivity)", score: 75, color: "bg-teal-500" },
+                    { label: "불확실성 (Uncertainty)", score: 30, color: "bg-gray-400" }
+                ]
+            }
+        };
+
+        function switchView(view) {
+            const chartView = document.getElementById('chart-view');
+            const cloudView = document.getElementById('cloud-view');
+            const btnChart = document.getElementById('btn-chart');
+            const btnCloud = document.getElementById('btn-cloud');
+
+            btnChart.className = "px-4 py-2 text-sm rounded-md font-medium text-gray-500 hover:text-gray-700 transition-all";
+            btnCloud.className = "px-4 py-2 text-sm rounded-md font-medium text-gray-500 hover:text-gray-700 transition-all";
+
+            if (view === 'chart') {
+                chartView.classList.remove('hidden');
+                cloudView.classList.add('hidden');
+                btnChart.classList.add('btn-toggle-active', 'shadow-sm');
+                btnChart.classList.remove('text-gray-500', 'hover:text-gray-700');
+            } else {
+                chartView.classList.add('hidden');
+                cloudView.classList.remove('hidden');
+                btnCloud.classList.add('btn-toggle-active', 'shadow-sm');
+                btnCloud.classList.remove('text-gray-500', 'hover:text-gray-700');
+
+                setTimeout(() => {
+                    renderWordCloud(db[currentEra]);
+                }, 50);
+            }
+        }
+
+        function toggleDataMode() {
+            const toggle = document.getElementById('stopword-toggle');
+            isFiltered = toggle.checked;
+
+            const toggleLabel = toggle.nextElementSibling;
+            if(isFiltered) {
+                toggleLabel.style.backgroundColor = db[currentEra].themeColor;
+            } else {
+                toggleLabel.style.backgroundColor = '#D1D5DB';
+            }
+
+            updateChartDisplay();
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+            } else {
+                html.classList.add('dark');
+            }
+        }
+
+        function updateChartDisplay() {
+            const eraData = db[currentEra];
+            const dataset = isFiltered ? eraData.filtered : eraData.raw;
+
+            const descEl = document.getElementById('analysis-desc');
+            descEl.style.opacity = 0;
+            setTimeout(() => {
+                descEl.innerText = dataset.desc;
+                descEl.style.opacity = 1;
+            }, 300);
+
+            const ctx = document.getElementById('frequencyChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dataset.labels,
+                    datasets: [{
+                        label: '언급 빈도수 (Frequency)',
+                        data: dataset.data,
+                        backgroundColor: eraData.bgColor,
+                        borderColor: eraData.borderColor,
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: true, drawBorder: false } },
+                        x: { grid: { display: false } }
+                    },
+                    animation: {
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        function renderWordCloud(eraData) {
+            const container = document.getElementById('cloud-view');
+            container.innerHTML = '';
+
+            const canvas = document.createElement('canvas');
+            canvas.id = 'word-cloud-canvas';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            container.appendChild(canvas);
+
+            const tooltip = document.getElementById('word-cloud-tooltip');
+
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            WordCloud(canvas, {
+                list: eraData.wordList,
+                gridSize: 12,
+                weightFactor: function (size) {
+                    return Math.pow(size, 0.9) * (width / 800) * 1.8;
+                },
+                fontFamily: '"Noto Sans KR", sans-serif',
+                color: function (word, weight) {
+                    return eraData.wordColors[Math.floor(Math.random() * eraData.wordColors.length)];
+                },
+                rotateRatio: 0,
+                rotationSteps: 2,
+                backgroundColor: 'transparent',
+                drawOutOfBound: false,
+                shrinkToFit: true,
+                shuffle: true,
+                hover: function(item, dimension, event) {
+                    if (item) {
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = event.pageX + 'px';
+                        tooltip.style.top = (event.pageY - 40) + 'px';
+                        tooltip.innerText = `${item[0]}: ${item[1]}회`;
+                        canvas.style.cursor = 'pointer';
+                    } else {
+                        tooltip.style.display = 'none';
+                        canvas.style.cursor = 'default';
+                    }
+                },
+                click: function(item) {
+                    if (item) {
+                        alert(`[${item[0]}]\n빈도수: ${item[1]}회\n\n이 키워드는 '${currentEra === 'past' ? '과거' : currentEra === 'present' ? '현재' : '미래'}' 시대를 대표하는 주요 단어입니다.`);
+                    }
+                }
+            });
+        }
+
+        function renderSentimentMeters(eraData) {
+            const container = document.getElementById('sentiment-meters');
+            container.innerHTML = '';
+
+            eraData.sentiments.forEach((item, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base font-semibold text-gray-700">${item.label}</span>
+                        <span class="text-base font-bold text-gray-600">${item.score}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
+                        <div class="${item.color} h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-3" style="width: 0%" id="meter-${index}">
+                            <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(wrapper);
+
+                setTimeout(() => {
+                    document.getElementById(`meter-${index}`).style.width = `${item.score}%`;
+                }, 100 + (index * 150));
+            });
+
+            const noteDiv = document.getElementById('analyst-note');
+            noteDiv.innerHTML = eraData.analystNote;
+        }
+
+        function toggleModal(type) {
+            const body = document.querySelector('body');
+            let modalId = type === 'reason' ? 'reason-modal' : 'experience-modal';
+            const modal = document.getElementById(modalId);
+
+            if (!modal.classList.contains('opacity-0')) {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                body.classList.remove('modal-active');
+            } else {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                body.classList.add('modal-active');
+
+                if (type === 'reason') {
+                    modal.classList.remove('theme-past', 'theme-present', 'theme-future');
+                    modal.classList.add(`theme-${currentEra}`);
+
+                    const data = db[currentEra];
+                    document.getElementById('modal-body').innerHTML = data.reason;
+
+                    const header = document.getElementById('modal-header-bg');
+                    if(currentEra === 'past') header.style.backgroundColor = '#b91c1c';
+                    else if(currentEra === 'present') header.style.backgroundColor = '#0369a1';
+                    else header.style.backgroundColor = '#059669';
+                }
+            }
+        }
+
+        function switchTab(era) {
+            currentEra = era;
+
+            document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('tab-active', 'border-red-700', 'border-blue-700', 'border-green-700', 'text-red-700', 'text-blue-700', 'text-green-700');
+                btn.classList.remove('hover:text-red-700', 'hover:text-blue-700', 'hover:text-green-700');
+                btn.classList.add('text-gray-500', 'hover:text-gray-700');
+            });
+            const activeTab = document.getElementById(`tab-${era}`);
+            activeTab.classList.remove('text-gray-500', 'hover:text-gray-700');
+
+            const content = document.getElementById('dashboard-content');
+            const summaryContainer = document.getElementById('era-summary-container');
+
+            content.classList.remove('theme-past', 'theme-present', 'theme-future');
+            summaryContainer.classList.remove('theme-past', 'theme-present', 'theme-future');
+            content.classList.add(`theme-${era}`);
+            summaryContainer.classList.add(`theme-${era}`);
+
+            if(era === 'past') {
+                activeTab.classList.add('tab-active', 'border-red-700', 'text-red-700', 'hover:text-red-700');
+            }
+            if(era === 'present') {
+                activeTab.classList.add('tab-active', 'border-blue-700', 'text-blue-700', 'hover:text-blue-700');
+            }
+            if(era === 'future') {
+                activeTab.classList.add('tab-active', 'border-green-700', 'text-green-700', 'hover:text-green-700');
+            }
+
+            content.classList.remove('fade-in');
+            summaryContainer.classList.remove('fade-in');
+
+            void content.offsetWidth;
+
+            content.classList.add('fade-in');
+            summaryContainer.classList.add('fade-in');
+
+            const toggle = document.getElementById('stopword-toggle');
+            if(isFiltered) {
+                toggleDataMode();
+            }
+
+            const data = db[era];
+
+            document.getElementById('era-summary-text').innerHTML = data.summary;
+
+            renderSentimentMeters(data);
+            updateChartDisplay();
+
+            const cloudView = document.getElementById('cloud-view');
+            if(!cloudView.classList.contains('hidden')) {
+                setTimeout(() => {
+                    renderWordCloud(data);
+                }, 50);
+            }
+        }
+
+        window.onload = function() {
+            switchTab('past');
+        };
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const cloudView = document.getElementById('cloud-view');
+                if(!cloudView.classList.contains('hidden')) {
+                    renderWordCloud(db[currentEra]);
+                }
+            }, 250);
+        });
+
+    </script>
+</body>
+</html>

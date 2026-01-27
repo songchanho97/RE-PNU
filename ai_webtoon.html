@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산대 시대상 반영 AI 콘텐츠 제작</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#111827',
+                            card: '#1F2937',
+                            border: '#374151',
+                            text: '#F3F4F6',
+                            subtext: '#9CA3AF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .step-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .active-step { border-bottom: 4px solid #4F46E5; color: #4F46E5; font-weight: 700; }
+        .dark .active-step { color: #818CF8; border-bottom-color: #818CF8; }
+        .inactive-step { border-bottom: 4px solid transparent; color: #6B7280; }
+        .dark .inactive-step { color: #9CA3AF; }
+
+        /* Transition for theme toggle */
+        body, div, nav, header, button, span, p, h1, h2, h3, h4 {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400 tracking-tight">🦅 부산대 AI Creative Studio</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Google AI Studio 활용: 효원의 역사와 시대를 그리는 웹툰 & 숏츠</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="app.toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle Dark Mode">
+                    <span id="theme-icon" class="text-xl">🌙</span>
+                </button>
+                <button onclick="app.reset()" class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors">
+                    🏠 처음으로
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation / Process Timeline -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm mb-6 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8 overflow-x-auto" id="nav-container">
+                <!-- Navigation items injected by JS -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12 transition-colors" id="main-content">
+        <!-- Dynamic Content injected here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>&copy; 2024 AI Creative Studio Guide. 데이터 기반 콘텐츠 제작 프로세스 정의서.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Data Store ---
+        const appData = {
+            phases: [
+                { id: 'overview', title: '🗺️ 전체 로드맵', label: 'Overview' },
+                { id: 'phase1', title: '1️⃣ 데이터 수집/전처리', label: 'Data Prep' },
+                { id: 'phase2', title: '2️⃣ 시대상 분석', label: 'Analysis' },
+                { id: 'phase3', title: '3️⃣ AI 콘텐츠 생성', label: 'Generation' }
+            ],
+            phase1: {
+                title: "🗂️ 데이터 수집 및 전처리 (부산대의 발자취)",
+                desc: "부산대학교의 역사적 사실과 시대별 학생들의 생활상을 담은 데이터를 수집하고, AI 학습에 맞게 다듬는 과정입니다.",
+                sources: [
+                    { name: "부산대 기록관/도서관", desc: "🏛️ 옛 학보, 졸업앨범, 건학 이념 자료", icon: "📚" },
+                    { name: "SNS & 에브리타임", desc: "🗣️ 현재 학생들의 반응 및 '라떼는' 썰", icon: "📱" },
+                    { name: "뉴스 아카이브", desc: "📰 부산대의 민주화 운동 및 주요 사건 기사", icon: "🗞️" }
+                ],
+                steps: [
+                    { name: "🧹 정제 (Cleaning)", desc: "오래된 문서의 노이즈 제거 및 디지털화" },
+                    { name: "📝 정규화 (Normalization)", desc: "시대별 사투리 및 은어 표준화 매핑" },
+                    { name: "💾 구조화 (Structuring)", desc: "연도별/사건별 타임라인 데이터셋 구축" }
+                ]
+            },
+            phase2: {
+                title: "🧠 데이터 분석 (효원의 시대정신)",
+                desc: "수집된 데이터를 통해 부산대만의 고유한 정서(효원 정신)와 대중이 반응하는 시대적 코드를 찾아냅니다.",
+                keywords: [
+                    { word: "80년대 대동제", sentiment: [80, 10, 10], desc: "🔥 뜨거웠던 청춘과 민주화의 열기" },
+                    { word: "미리내의 전설", sentiment: [90, 5, 5], desc: "👫 캠퍼스 커플과 넉넉한 터의 낭만" },
+                    { word: "도서관의 새벽", sentiment: [70, 20, 10], desc: "🎓 시대를 불문한 치열한 학구열" }
+                ],
+                persona: {
+                    labels: ['애교심', '역사 인식', '트렌드 감각', '공감 능력', '창의성'],
+                    data: [95, 85, 90, 80, 75],
+                    desc: "🦅 부산대의 역사와 전통을 '뉴트로(Newtro)' 감각으로 재해석하는 20대 크리에이터"
+                }
+            },
+            phase3: {
+                title: "🎨 Google AI Studio 활용 및 제작",
+                desc: "분석된 '시대상'을 프롬프트에 녹여, 과거와 현재가 공존하는 독창적인 웹툰과 숏츠를 만듭니다.",
+                commonSteps: [
+                    { title: "⚙️ 페르소나 설정", text: "너는 1946년부터 부산대를 지켜본 '산신령' 작가야." },
+                    { title: "📥 컨텍스트 주입", text: "부산대 70년사 데이터 및 주요 사건 연표 입력" }
+                ],
+                tracks: {
+                    webtoon: {
+                        title: "🖼️ 시대극 웹툰 트랙",
+                        steps: [
+                            { step: "1. 📜 시나리오 (Gemini)", detail: "1980년대 장전동 캠퍼스를 배경으로 한 청춘 드라마 작문" },
+                            { step: "2. 🎨 작화 생성 (Imagen)", detail: "빛바랜 필름 사진 스타일로 구정문/무지개문 복원 생성" },
+                            { step: "3. 💬 컷 연출", detail: "사투리 대사('밥 묵었나?') 삽입 및 레트로 말풍선 편집" }
+                        ]
+                    },
+                    shorts: {
+                        title: "🎬 타임랩스 숏츠 트랙",
+                        steps: [
+                            { step: "1. 📝 나레이션 (Script)", detail: "'그때 그 시절, 우리들의 넉터' 감성 스크립트 작성" },
+                            { step: "2. 🎥 영상 변환", detail: "흑백 졸업사진을 움직이는 영상으로 변환 (멀티모달)" },
+                            { step: "3. 🎵 BGM/성우", detail: "통기타 BGM 및 부산 사투리 AI 보이스 합성" }
+                        ]
+                    }
+                }
+            }
+        };
+
+        const app = {
+            currentPhase: 'overview',
+            charts: {},
+            isDark: false,
+
+            init: function() {
+                this.initTheme();
+                this.renderNav();
+                this.renderContent(this.currentPhase);
+            },
+
+            initTheme: function() {
+                const savedTheme = localStorage.getItem('theme');
+                // Check local storage or system preference
+                if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    this.isDark = true;
+                    document.documentElement.classList.add('dark');
+                    document.getElementById('theme-icon').innerText = '☀️';
+                } else {
+                    this.isDark = false;
+                    document.documentElement.classList.remove('dark');
+                    document.getElementById('theme-icon').innerText = '🌙';
+                }
+            },
+
+            toggleTheme: function() {
+                this.isDark = !this.isDark;
+                if (this.isDark) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    document.getElementById('theme-icon').innerText = '☀️';
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    document.getElementById('theme-icon').innerText = '🌙';
+                }
+                // Re-render content to update chart colors
+                this.renderContent(this.currentPhase);
+                this.renderNav(); // Re-render nav to update active styles
+            },
+
+            reset: function() {
+                this.currentPhase = 'overview';
+                this.renderNav();
+                this.renderContent('overview');
+            },
+
+            getChartColor: function() {
+                return this.isDark ? '#E5E7EB' : '#4B5563'; // gray-200 : gray-600
+            },
+
+            getChartGridColor: function() {
+                return this.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            },
+
+            renderNav: function() {
+                const navContainer = document.getElementById('nav-container');
+                navContainer.innerHTML = appData.phases.map(phase => `
+                    <button
+                        onclick="app.changePhase('${phase.id}')"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
+                            this.currentPhase === phase.id
+                            ? (this.isDark ? 'border-indigo-400 text-indigo-400' : 'border-indigo-500 text-indigo-600')
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                        }"
+                    >
+                        ${phase.title}
+                    </button>
+                `).join('');
+            },
+
+            changePhase: function(phaseId) {
+                this.currentPhase = phaseId;
+                this.renderNav();
+                this.renderContent(phaseId);
+            },
+
+            renderContent: function(phaseId) {
+                const main = document.getElementById('main-content');
+                // Destroy existing charts to prevent memory leaks
+                Object.values(this.charts).forEach(chart => chart.destroy());
+                this.charts = {};
+
+                main.innerHTML = ''; // Clear content
+                main.classList.remove('fade-in');
+                void main.offsetWidth; // Trigger reflow
+                main.classList.add('fade-in');
+
+                switch(phaseId) {
+                    case 'overview': this.renderOverview(main); break;
+                    case 'phase1': this.renderPhase1(main); break;
+                    case 'phase2': this.renderPhase2(main); break;
+                    case 'phase3': this.renderPhase3(main); break;
+                }
+            },
+
+            // --- Render Logic: Overview ---
+            renderOverview: function(container) {
+                container.innerHTML = `
+                    <div class="text-center py-10">
+                        <h2 class="text-3xl font-bold text-indigo-900 dark:text-indigo-300 mb-4">🦅 부산대 시대상 반영 AI 프로세스 🦅</h2>
+                        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10">
+                            부산대학교의 <span class="text-indigo-600 dark:text-indigo-400 font-bold">과거(History)</span> 데이터를 AI로 분석하여<br>
+                            현대적인 감각의 <span class="text-purple-600 dark:text-purple-400 font-bold">웹툰 & 숏츠</span>로 재탄생시킵니다.
+                        </p>
+
+                        <!-- Emoji Flowchart -->
+                        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-indigo-100 dark:border-gray-700 mb-12 transform hover:scale-[1.01] transition-transform">
+                            <div class="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 text-center">
+
+                                <div class="flex flex-col items-center group cursor-pointer" onclick="app.changePhase('phase1')">
+                                    <div class="text-6xl mb-4 transform group-hover:scale-110 transition-transform">📚</div>
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100">데이터 수집</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">기록관/커뮤니티</p>
+                                </div>
+
+                                <div class="text-3xl text-gray-300 dark:text-gray-600 animate-pulse hidden md:block">➡️</div>
+                                <div class="text-3xl text-gray-300 dark:text-gray-600 animate-pulse md:hidden">⬇️</div>
+
+                                <div class="flex flex-col items-center group cursor-pointer" onclick="app.changePhase('phase1')">
+                                    <div class="text-6xl mb-4 transform group-hover:scale-110 transition-transform">🧹</div>
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100">전처리</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">노이즈 제거</p>
+                                </div>
+
+                                <div class="text-3xl text-gray-300 dark:text-gray-600 animate-pulse hidden md:block">➡️</div>
+                                <div class="text-3xl text-gray-300 dark:text-gray-600 animate-pulse md:hidden">⬇️</div>
+
+                                <div class="flex flex-col items-center group cursor-pointer" onclick="app.changePhase('phase2')">
+                                    <div class="text-6xl mb-4 transform group-hover:scale-110 transition-transform">🧠</div>
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100">분석 & 기획</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">시대상/키워드</p>
+                                </div>
+
+                                <div class="text-3xl text-gray-300 dark:text-gray-600 animate-pulse hidden md:block">➡️</div>
+                                <div class="text-3xl text-gray-300 dark:text-gray-600 animate-pulse md:hidden">⬇️</div>
+
+                                <div class="flex flex-col items-center group cursor-pointer" onclick="app.changePhase('phase3')">
+                                    <div class="text-6xl mb-4 transform group-hover:scale-110 transition-transform">✨</div>
+                                    <h3 class="font-bold text-lg text-indigo-600 dark:text-indigo-400">AI 창작</h3>
+                                    <p class="text-xs text-indigo-500 dark:text-indigo-400 mt-1">웹툰/숏츠</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div onclick="app.changePhase('phase1')" class="step-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer transition-all">
+                                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg flex items-center justify-center text-2xl mb-4">🏛️</div>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Step 1. 기록의 수집</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">부산대 기록관과 학보사 아카이브에서 시대의 조각들을 모읍니다.</p>
+                            </div>
+                            <div onclick="app.changePhase('phase2')" class="step-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer transition-all">
+                                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-lg flex items-center justify-center text-2xl mb-4">🔍</div>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Step 2. 시대 정신 발견</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">'민주화', '낭만', '학구열' 등 효원인들을 관통하는 키워드를 추출합니다.</p>
+                            </div>
+                            <div onclick="app.changePhase('phase3')" class="step-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer transition-all">
+                                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-lg flex items-center justify-center text-2xl mb-4">🎨</div>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Step 3. 콘텐츠 구현</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">Gemini와 Imagen을 사용해 그 시절 그 장소를 생생하게 되살려냅니다.</p>
+                            </div>
+                        </div>
+
+                        <!-- Result Gallery Section -->
+                        <div class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-700">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-8 flex items-center justify-center">
+                                <span class="mr-2">📸</span> 서비스 결과물 예시
+                            </h3>
+                            <p class="text-gray-500 dark:text-gray-400 mb-8">서비스 홈 접속부터 웹툰/숏츠 생성까지의 실제 구동 화면입니다.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+                                <!-- 1. 서비스 홈화면 -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow group">
+                                    <div class="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                                        <img src="img/step1.png" alt="서비스 홈화면" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Service+Home'">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                                    </div>
+                                    <div class="p-5">
+                                        <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mb-1">Step 01</div>
+                                        <h4 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">서비스 홈화면</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">부산대의 아이덴티티가 담긴 메인 접속 화면입니다.</p>
+                                    </div>
+                                </div>
+
+                                <!-- 2. 사용자 얼굴 삽입 -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow group">
+                                    <div class="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                                        <img src="img/step2.png" alt="사용자 얼굴 삽입" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Face+Upload'">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                                    </div>
+                                    <div class="p-5">
+                                        <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mb-1">Step 02</div>
+                                        <h4 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">사용자 얼굴 삽입</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">주인공 캐릭터 생성을 위해 사용자의 얼굴을 업로드합니다.</p>
+                                    </div>
+                                </div>
+
+                                <!-- 3. 시대상 선택 -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow group">
+                                    <div class="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                                        <img src="img/step3.png" alt="시대상 선택" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Select+Era'">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                                    </div>
+                                    <div class="p-5">
+                                        <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mb-1">Step 03</div>
+                                        <h4 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">시대상 선택</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">80년대 민주화 시기, 낭만의 캠퍼스 등 배경 시대를 설정합니다.</p>
+                                    </div>
+                                </div>
+
+                                <!-- 4. 이미지 생성 -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow group">
+                                    <div class="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                                        <img src="img/step4.png" alt="이미지 생성" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Image+Generation'">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                                    </div>
+                                    <div class="p-5">
+                                        <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mb-1">Step 04</div>
+                                        <h4 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">이미지 생성</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Imagen이 생성한 시대적 배경과 캐릭터의 합성 결과입니다.</p>
+                                    </div>
+                                </div>
+
+                                <!-- 5. 웹툰 생성 -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow group">
+                                    <div class="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                                        <img src="img/step5.png" alt="웹툰 생성" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Webtoon+Result'">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                                    </div>
+                                    <div class="p-5">
+                                        <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mb-1">Step 05</div>
+                                        <h4 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">웹툰 생성</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">대사와 컷 연출이 포함된 최종 웹툰 페이지입니다.</p>
+                                    </div>
+                                </div>
+
+                                <!-- 6. 숏츠 생성 -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow group">
+                                    <div class="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                                        <img src="img/step6.png" alt="숏츠 생성" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Shorts+Result'">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                                    </div>
+                                    <div class="p-5">
+                                        <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mb-1">Step 06</div>
+                                        <h4 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">숏츠 생성</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">BGM과 나레이션이 입혀진 숏폼 영상 결과물입니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Features Section -->
+                        <div class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-700">
+                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-10 text-center">
+                                <span class="text-indigo-600 dark:text-indigo-400">Why?</span> 우리 서비스만의 특별함
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <!-- Feature 1 -->
+                                <div class="bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl p-8 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-100 dark:border-indigo-800">
+                                    <div class="text-5xl mb-6">🎭</div>
+                                    <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">생생한 시간 여행</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        단순한 관람이 아닙니다.<br>
+                                        <strong>사용자의 얼굴</strong>을 그 시절 배경에 합성하여<br>
+                                        마치 80년대 캠퍼스에 있는 듯한<br>
+                                        생생한 몰입감을 선사합니다.
+                                    </p>
+                                </div>
+
+                                <!-- Feature 2 -->
+                                <div class="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-8 text-center hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors border border-purple-100 dark:border-purple-800">
+                                    <div class="text-5xl mb-6">✍️</div>
+                                    <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">내가 만드는 효원 이야기</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        역사의 관찰자에서 창작자로.<br>
+                                        원하는 시대와 소재를 선택하여<br>
+                                        <strong>나만의 부산대 스토리</strong>를<br>
+                                        직접 그려나갈 수 있습니다.
+                                    </p>
+                                </div>
+
+                                <!-- Feature 3 -->
+                                <div class="bg-blue-50 dark:bg-blue-900/30 rounded-2xl p-8 text-center hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border border-blue-100 dark:border-blue-800">
+                                    <div class="text-5xl mb-6">✨</div>
+                                    <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">고퀄리티 AI 콘텐츠</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        Google AI Studio의 강력한 성능.<br>
+                                        전문 작가 수준의 <strong>웹툰 작화</strong>와<br>
+                                        생동감 넘치는 <strong>숏츠 영상</strong>을<br>
+                                        즉시 생성하고 소장하세요.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            },
+
+            // --- Render Logic: Phase 1 ---
+            renderPhase1: function(container) {
+                const data = appData.phase1;
+                const chartColor = this.getChartColor();
+                const gridColor = this.getChartGridColor();
+
+                container.innerHTML = `
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">${data.title}</h2>
+                        <p class="text-gray-600 dark:text-gray-300">${data.desc}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <!-- Source Selection -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4 border-b dark:border-gray-700 pb-2">수집 대상 소스</h3>
+                            <div class="space-y-4">
+                                ${data.sources.map(src => `
+                                    <div class="flex items-start p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                        <span class="text-2xl mr-4">${src.icon}</span>
+                                        <div>
+                                            <h4 class="font-bold text-gray-700 dark:text-gray-200">${src.name}</h4>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">${src.desc}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Visualization -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4 border-b dark:border-gray-700 pb-2">데이터 정제 효과</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">원시 데이터에서 노이즈(광고, 중복)를 제거하여 고품질 학습 데이터를 확보합니다.</p>
+                            <div class="chart-container">
+                                <canvas id="cleaningChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Steps Process -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-6">전처리 3단계</h3>
+                        <div class="flex flex-col md:flex-row justify-between items-center relative space-y-6 md:space-y-0">
+                            <!-- Line for desktop -->
+                            <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gray-100 dark:bg-gray-700 -z-0"></div>
+
+                            ${data.steps.map((step, idx) => `
+                                <div class="relative z-10 flex flex-col items-center text-center w-full md:w-1/3 p-4 bg-white dark:bg-gray-800">
+                                    <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold mb-3 shadow-lg">
+                                        ${idx + 1}
+                                    </div>
+                                    <h4 class="font-bold text-gray-800 dark:text-gray-100 mb-1">${step.name}</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">${step.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                // Render Chart
+                const ctx = document.getElementById('cleaningChart').getContext('2d');
+                this.charts.cleaning = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['원시 데이터', '정제 후 데이터'],
+                        datasets: [{
+                            label: '데이터 양 (건수)',
+                            data: [10000, 4500],
+                            backgroundColor: ['#E5E7EB', '#4F46E5'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false, labels: { color: chartColor } }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: chartColor },
+                                grid: { color: gridColor }
+                            },
+                            x: {
+                                ticks: { color: chartColor },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            },
+
+            // --- Render Logic: Phase 2 ---
+            renderPhase2: function(container) {
+                const data = appData.phase2;
+                const chartColor = this.getChartColor();
+                const gridColor = this.getChartGridColor();
+
+                container.innerHTML = `
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">${data.title}</h2>
+                        <p class="text-gray-600 dark:text-gray-300">${data.desc}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <!-- Trend Keywords & Sentiment -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">🔑 시대상 키워드 분석</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">키워드를 클릭하여 당시의 감성 분포를 확인하세요.</p>
+
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                ${data.keywords.map((kw, idx) => `
+                                    <button
+                                        onclick="app.updateSentiment(${idx})"
+                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-gray-700 dark:text-gray-200 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-full text-sm font-medium transition-colors focus:ring-2 ring-indigo-500"
+                                        id="kw-btn-${idx}"
+                                    >
+                                        #${kw.word}
+                                    </button>
+                                `).join('')}
+                            </div>
+
+                            <div id="keyword-desc" class="bg-indigo-50 dark:bg-indigo-900/30 p-3 rounded-lg text-sm text-indigo-800 dark:text-indigo-200 mb-4 flex items-center">
+                                <span class="text-2xl mr-2">💡</span>
+                                <span>#${data.keywords[0].word}: ${data.keywords[0].desc}</span>
+                            </div>
+
+                            <div class="chart-container">
+                                <canvas id="sentimentChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Target Persona -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">👤 타겟 페르소나 (효원인)</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">${data.persona.desc}</p>
+                            <div class="chart-container">
+                                <canvas id="personaChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Render Sentiment Chart (Initial)
+                const sentCtx = document.getElementById('sentimentChart').getContext('2d');
+                this.charts.sentiment = new Chart(sentCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['긍정', '부정', '중립'],
+                        datasets: [{
+                            data: data.keywords[0].sentiment,
+                            backgroundColor: ['#34D399', '#F87171', '#9CA3AF'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: chartColor } },
+                            title: { display: true, text: `'${data.keywords[0].word}' 감성 분포`, color: chartColor }
+                        }
+                    }
+                });
+
+                // Render Persona Chart
+                const perCtx = document.getElementById('personaChart').getContext('2d');
+                this.charts.persona = new Chart(perCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: data.persona.labels,
+                        datasets: [{
+                            label: '타겟 특성',
+                            data: data.persona.data,
+                            fill: true,
+                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                            borderColor: '#4F46E5',
+                            pointBackgroundColor: '#4F46E5',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#4F46E5'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { display: false, color: gridColor },
+                                grid: { color: gridColor },
+                                pointLabels: { color: chartColor },
+                                ticks: { display: false },
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+
+                // Set initial active button
+                setTimeout(() => {
+                    const btn = document.getElementById('kw-btn-0');
+                    if(btn) {
+                        btn.classList.add('bg-indigo-100', 'text-indigo-700', 'dark:bg-indigo-900', 'dark:text-indigo-300');
+                        btn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+                    }
+                }, 0);
+            },
+
+            updateSentiment: function(index) {
+                const kw = appData.phase2.keywords[index];
+
+                // Update UI Buttons
+                document.querySelectorAll('[id^="kw-btn-"]').forEach(btn => {
+                    btn.classList.remove('bg-indigo-100', 'text-indigo-700', 'dark:bg-indigo-900', 'dark:text-indigo-300');
+                    btn.classList.add('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+                });
+
+                const activeBtn = document.getElementById(`kw-btn-${index}`);
+                activeBtn.classList.add('bg-indigo-100', 'text-indigo-700', 'dark:bg-indigo-900', 'dark:text-indigo-300');
+                activeBtn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+
+                document.getElementById('keyword-desc').innerHTML = `<span class="text-2xl mr-2">💡</span><span>#${kw.word}: ${kw.desc}</span>`;
+
+                // Update Chart
+                this.charts.sentiment.data.datasets[0].data = kw.sentiment;
+                this.charts.sentiment.options.plugins.title.text = `'${kw.word}' 감성 분포`;
+                this.charts.sentiment.update();
+            },
+
+            // --- Render Logic: Phase 3 ---
+            renderPhase3: function(container) {
+                const data = appData.phase3;
+                container.innerHTML = `
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">${data.title}</h2>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">${data.desc}</p>
+
+                        <!-- Common Settings -->
+                        <div class="bg-white dark:bg-gray-800 border-l-4 border-yellow-400 p-4 rounded-r-lg shadow-sm mb-8">
+                            <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-2">공통 준비 사항</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${data.commonSteps.map(step => `
+                                    <div class="flex items-start">
+                                        <span class="text-yellow-500 mr-2">⚡</span>
+                                        <div>
+                                            <span class="font-semibold text-sm block dark:text-gray-200">${step.title}</span>
+                                            <span class="text-gray-600 dark:text-gray-400 text-xs">${step.text}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Track Toggle -->
+                    <div class="bg-gray-200 dark:bg-gray-700 p-1 rounded-lg inline-flex mb-8">
+                        <button onclick="app.toggleTrack('webtoon')" id="track-btn-webtoon" class="px-6 py-2 rounded-md text-sm font-bold transition-all shadow-sm">
+                            웹툰 (Webtoon)
+                        </button>
+                        <button onclick="app.toggleTrack('shorts')" id="track-btn-shorts" class="px-6 py-2 rounded-md text-sm font-bold transition-all">
+                            숏츠 (Shorts)
+                        </button>
+                    </div>
+
+                    <!-- Track Content -->
+                    <div id="track-content" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 min-h-[400px]">
+                        <!-- Content injected via toggleTrack -->
+                    </div>
+                `;
+                this.toggleTrack('webtoon');
+            },
+
+            toggleTrack: function(trackName) {
+                const btnWebtoon = document.getElementById('track-btn-webtoon');
+                const btnShorts = document.getElementById('track-btn-shorts');
+                const contentDiv = document.getElementById('track-content');
+                const trackData = appData.phase3.tracks[trackName];
+
+                // Style Toggles
+                if(trackName === 'webtoon') {
+                    btnWebtoon.className = "px-6 py-2 rounded-md text-sm font-bold transition-all shadow-sm bg-white dark:bg-gray-600 text-indigo-700 dark:text-indigo-200";
+                    btnShorts.className = "px-6 py-2 rounded-md text-sm font-bold transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200";
+                } else {
+                    btnWebtoon.className = "px-6 py-2 rounded-md text-sm font-bold transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200";
+                    btnShorts.className = "px-6 py-2 rounded-md text-sm font-bold transition-all shadow-sm bg-white dark:bg-gray-600 text-purple-700 dark:text-purple-200";
+                }
+
+                // Inject Content
+                contentDiv.innerHTML = `
+                    <div class="flex flex-col h-full fade-in">
+                        <div class="mb-6 flex items-center justify-between">
+                            <h3 class="text-2xl font-bold ${trackName === 'webtoon' ? 'text-indigo-700 dark:text-indigo-400' : 'text-purple-700 dark:text-purple-400'}">
+                                ${trackData.title}
+                            </h3>
+                            <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-mono text-gray-500 dark:text-gray-300">Google AI Studio Workflow</span>
+                        </div>
+
+                        <div class="space-y-6">
+                            ${trackData.steps.map((step, idx) => `
+                                <div class="group relative pl-8 border-l-2 ${trackName === 'webtoon' ? 'border-indigo-200 dark:border-indigo-800' : 'border-purple-200 dark:border-purple-800'} pb-6 last:pb-0">
+                                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full ${trackName === 'webtoon' ? 'bg-indigo-500' : 'bg-purple-500'} ring-4 ring-white dark:ring-gray-800"></div>
+                                    <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100 group-hover:text-${trackName === 'webtoon' ? 'indigo' : 'purple'}-600 dark:group-hover:text-${trackName === 'webtoon' ? 'indigo' : 'purple'}-400 transition-colors">
+                                        ${step.step}
+                                    </h4>
+                                    <p class="text-gray-600 dark:text-gray-400 mt-1">${step.detail}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                            <div>
+                                <span class="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase">Final Step</span>
+                                <span class="font-bold text-gray-800 dark:text-gray-200">검수 및 플랫폼 업로드</span>
+                            </div>
+                            <button class="px-4 py-2 bg-gray-800 dark:bg-gray-600 text-white text-sm rounded hover:bg-black dark:hover:bg-gray-500 transition-colors">
+                                제작 완료 시뮬레이션
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
