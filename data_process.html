@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>부산대 80년, 데이터 여정 (The Data Journey)</title>
+    <title>RE-PNU: 부산대 80년, 데이터 여정</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -125,15 +125,22 @@
     <!-- Header -->
     <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-transparent dark:border-slate-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-blue-900 dark:bg-blue-600 text-white flex items-center justify-center font-bold rounded-lg shadow-inner transition-colors">DH</div>
-                <div class="flex flex-col md:flex-row md:items-baseline md:space-x-2">
-                    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">부산대 80주년, 데이터의 여정</h1>
-                    <span class="hidden md:inline text-gray-300 dark:text-slate-600">|</span>
-                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">데이터 수집 및 분석 방법론</p>
+
+            <!-- RE-PNU Logo Section (Updated) -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20 transition-transform hover:scale-105">
+                    <span class="text-white font-black text-xl">R</span>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-baseline md:gap-3">
+                    <span class="font-black text-2xl tracking-tighter text-gray-900 dark:text-white">RE-PNU</span>
+                    <div class="hidden md:flex items-center gap-2">
+                        <span class="text-gray-300 dark:text-slate-600">|</span>
+                        <span class="text-sm font-medium text-gray-500 dark:text-slate-400">부산대 80년, 데이터의 여정</span>
+                    </div>
                 </div>
             </div>
 
+            <!-- Right Controls -->
             <div class="flex items-center space-x-3">
                 <!-- Theme Toggle Button -->
                 <button id="theme-toggle" class="p-2 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-yellow-400 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Toggle Dark Mode">
@@ -141,9 +148,9 @@
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                 </button>
 
-                <a href="PNU_Zeitgeist_Report.html" class="group text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-white dark:hover:text-slate-900 hover:bg-blue-600 dark:hover:bg-blue-400 px-5 py-2.5 rounded-full border border-blue-600 dark:border-blue-400 transition-all duration-300 flex items-center">
+                <button class="group text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-white dark:hover:text-slate-900 hover:bg-blue-600 dark:hover:bg-blue-400 px-5 py-2.5 rounded-full border border-blue-600 dark:border-blue-400 transition-all duration-300 flex items-center cursor-not-allowed opacity-70" title="현재 미리보기에서는 링크 이동이 제한됩니다.">
                     분석 리포트 보기 <i data-lucide="bar-chart-2" class="w-4 h-4 ml-2 group-hover:scale-110 transition-transform"></i>
-                </a>
+                </button>
             </div>
         </div>
     </header>
@@ -221,17 +228,23 @@
                         <h4 class="text-2xl font-black mb-2 text-gray-900 dark:text-slate-100">현재</h4>
                         <p class="text-xs font-bold text-gray-400 dark:text-slate-500 mb-6 uppercase tracking-tighter">2000 - 2025 : Reality</p>
                         <div class="space-y-4">
-                            <div class="p-4 rounded-2xl bg-indigo-50/30 dark:bg-indigo-900/20">
-                                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-200">공식 SNS 채널</p>
-                                <p class="text-[10px] text-indigo-400 dark:text-indigo-400 mt-1">인스타그램/유튜브 텍스트</p>
+                            <div class="p-4 rounded-2xl bg-indigo-50/30 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
+                                <div class="flex justify-between items-start mb-1">
+                                    <p class="text-sm font-bold text-indigo-900 dark:text-indigo-200">공식 SNS 채널</p>
+                                    <span class="text-[10px] font-black text-white bg-indigo-500 px-2 py-0.5 rounded-md shadow-sm">120건</span>
+                                </div>
+                                <p class="text-[10px] text-indigo-400 dark:text-indigo-400">인스타그램/유튜브 텍스트</p>
                             </div>
-                            <div class="p-4 rounded-2xl bg-indigo-50/30 dark:bg-indigo-900/20">
-                                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-200">에브리타임 트렌드</p>
-                                <p class="text-[10px] text-indigo-400 dark:text-indigo-400 mt-1">익명 커뮤니티 키워드</p>
+                            <div class="p-4 rounded-2xl bg-indigo-50/30 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
+                                <div class="flex justify-between items-start mb-1">
+                                    <p class="text-sm font-bold text-indigo-900 dark:text-indigo-200">에브리타임 트렌드</p>
+                                    <span class="text-[10px] font-black text-white bg-indigo-500 px-2 py-0.5 rounded-md shadow-sm">120건</span>
+                                </div>
+                                <p class="text-[10px] text-indigo-400 dark:text-indigo-400">익명 커뮤니티 키워드</p>
                             </div>
-                            <div class="p-4 rounded-2xl bg-indigo-50/30 dark:bg-indigo-900/20">
-                                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-200">온라인 리뷰 & 기사</p>
-                                <p class="text-[10px] text-indigo-400 dark:text-indigo-400 mt-1">네이버 블로그/뉴스</p>
+                            <div class="p-4 rounded-2xl bg-indigo-50/30 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
+                                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-200">부산대 관련 기사</p>
+                                <p class="text-[10px] text-indigo-400 dark:text-indigo-400 mt-1">네이버 뉴스/보도자료</p>
                             </div>
                         </div>
                     </div>
@@ -272,7 +285,7 @@
                         <span class="tag text-emerald-600 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">#지역</span>
                         <span class="tag text-emerald-600 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">#글로컬</span>
                         <span class="tag text-emerald-600 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">#혁신</span>
-                        <span class="tag text-emerald-600 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">#융합</span>
+                        <span class="tag text-emerald-600 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">#ai융합</span>
                     </div>
                 </div>
             </div>
@@ -420,14 +433,13 @@
                         <span class="text-yellow-300 font-bold">시대의 정서를 직접 확인하고 탐험해보세요.</span>
                     </p>
                 </div>
-
-                <a href="data_result.html" class="group relative px-10 py-5 bg-white text-indigo-900 font-black text-xl rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl flex items-center overflow-hidden shrink-0">
-                    <span class="relative z-10 flex items-center">
-                        분석 리포트 보기
-                        <i data-lucide="compass" class="ml-3 w-6 h-6 group-hover:rotate-180 transition-transform duration-700"></i>
-                    </span>
-                    <div class="absolute inset-0 bg-indigo-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
-                </a>
+            <a href="data_result.html" class="group relative px-10 py-5 bg-white text-indigo-900 font-black text-xl rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl flex items-center overflow-hidden shrink-0">
+                <span class="relative z-10 flex items-center">
+                    분석 리포트 보기
+                    <i data-lucide="compass" class="ml-3 w-6 h-6 group-hover:rotate-180 transition-transform duration-700"></i>
+                </span>
+                <div class="absolute inset-0 bg-indigo-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+            </a>
             </div>
         </section>
 
@@ -448,8 +460,9 @@
         const themeToggleBtn = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
 
-        // Check local storage or system preference
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        // Check local storage (Default to Light Mode)
+        // 시스템 설정을 무시하고 사용자가 'dark'를 저장하지 않은 이상 라이트 모드를 기본으로 합니다.
+        if (localStorage.theme === 'dark') {
             htmlElement.classList.add('dark');
         } else {
             htmlElement.classList.remove('dark');
