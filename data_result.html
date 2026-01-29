@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE-PNU: 데이터가 기억하는 시대정신</title>
+    <title>부산대 80년, 데이터가 기억하는 시대정신</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -111,7 +111,7 @@
     <div id="word-cloud-tooltip"></div>
 
     <!-- Header -->
-    <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-transparent dark:border-gray-800 transition-colors duration-300">
+    <header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-gray-800 dark:border-b dark:border-gray-700 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
 
             <!-- RE-PNU Logo Section (Updated) -->
@@ -129,17 +129,19 @@
                 </div>
             </div>
 
-            <div class="flex items-center space-x-4">
-                <!-- Result Links in Header -->
-                <a href="storybook.html" target="_blank" class="hidden lg:flex text-sm font-medium text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors items-center">
-                    <i data-lucide="book-open" class="w-4 h-4 mr-1"></i> 스토리북
+            <div class="flex items-center space-x-2 md:space-x-4">
+                <!-- Added Icon Buttons -->
+                <a href="storybook.html" target="_blank" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors group" title="스토리북">
+                    <i data-lucide="book-open" class="w-5 h-5 mr-2 text-gray-500 group-hover:text-green-600 dark:text-gray-400 dark:group-hover:text-green-400"></i>
+                    <span class="text-sm font-medium group-hover:text-gray-900 dark:group-hover:text-white">스토리북</span>
                 </a>
-                <a href="video.html" target="_blank" class="hidden lg:flex text-sm font-medium text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors items-center">
-                    <i data-lucide="video" class="w-4 h-4 mr-1"></i> AI영상
+                <a href="video.html" target="_blank" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors group" title="AI영상">
+                    <i data-lucide="video" class="w-5 h-5 mr-2 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-400"></i>
+                    <span class="text-sm font-medium group-hover:text-gray-900 dark:group-hover:text-white">AI영상</span>
                 </a>
 
                 <!-- Era Experience Link (Highlight) -->
-                <a href="experience.html" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors flex items-center bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-lg">
+                <a href="experience.html" class="hidden md:flex text-sm font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors items-center bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-lg">
                     <i data-lucide="play-circle" class="w-4 h-4 mr-2"></i> 시대 체험하기
                 </a>
 
@@ -316,7 +318,7 @@
                             <h3 class="text-2xl font-bold text-gray-900 mb-3 dark:text-white">치열한 새벽</h3>
                             <p class="text-xs text-gray-500 font-mono mb-4 bg-gray-50 p-2 rounded border border-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400">Keyword: 취업, 경쟁, 갓생</p>
                             <p class="text-gray-600 mb-6 text-sm leading-relaxed dark:text-gray-300">
-                                '취업'과 '스펙' 등 치열한 미래 준비 속에서도, '참여'와 '활동' 키워드의 높은 빈도는 낭만을 놓치지 않으려는 <strong>균형 잡힌 태도</strong>와 <strong>소소한 즐거움</strong>을 보여줍니다.
+                                <strong>'취업'</strong>이라는 치열한 현실 속에서도 '활동'을 통해 낭만을 잃지 않으려는 부산대생의 주체적인 <strong>균형(Balance)</strong>을 담은 <strong>현재 체험형 사이트</strong>입니다.
                             </p>
                         </div>
                     </div>
@@ -339,33 +341,36 @@
 
                 </div>
 
-            <div class="flex flex-col items-center gap-6 mt-12">
-
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-6 w-full">
+                <div class="text-center flex flex-col sm:flex-row justify-center items-center gap-6 mt-12">
 
                     <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <!-- Storybook Button -->
                         <a href="https://gemini.google.com/share/5bc2a7c25feb" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-xl font-bold text-gray-700 bg-white border border-gray-300 shadow-sm hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all duration-300 flex items-center justify-center gap-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
                             <i data-lucide="book-open" class="w-5 h-5"></i>
                             <span>스토리북 보기</span>
                         </a>
 
-                        <a href="https://drive.google.com/file/d/1Q3urUZenDCr2ScggSU5P2CR8Ej8IhK-x/view" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-xl font-bold text-gray-700 bg-white border border-gray-300 shadow-sm hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all duration-300 flex items-center justify-center gap-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
+                        <!-- AI Video Button -->
+                        <a href="https://drive.google.com/file/d/1XH-zlSWOd6EeIfdM9hBRx9XDY0BvqPFn/view?usp=sharing" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-xl font-bold text-gray-700 bg-white border border-gray-300 shadow-sm hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all duration-300 flex items-center justify-center gap-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
                             <i data-lucide="video" class="w-5 h-5"></i>
                             <span>AI영상 보기</span>
                         </a>
                     </div>
 
-                    <a href="https://re-pnu-973053081899.us-west1.run.app/" target="_blank" class="w-full sm:w-auto px-12 py-5 rounded-full font-bold text-white text-xl shadow-2xl transform transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center gap-3 group">
+                    <!-- Main Experience Button (CTA) -->
+                    <a href="https://aistudio.google.com/apps/drive/10KDN0-1o16hVrSLEzgxcKtVqlsR6Uxas?fullscreenApplet=true&showPreview=true&showAssistant=true" target="_blank" class="w-full sm:w-auto px-12 py-5 rounded-full font-bold text-white text-xl shadow-2xl transform transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center gap-3 group">
                         <span>그때 그 시대, 체험형 사이트로 만나기</span>
                         <i data-lucide="arrow-right-circle" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
                     </a>
-
                 </div>
 
-                <a href="./making_process.html" target="_blank" class="px-8 py-3 rounded-full font-medium text-gray-500 bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:text-gray-800 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
-                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
-                    <span>프로젝트 제작과정 확인하기</span>
-                </a>
+                <!-- Project Process Button (Modified Text) -->
+                <div class="mt-12 flex justify-center pb-8">
+                    <a href="making_process.html" target="_blank" class="inline-flex items-center px-8 py-3 bg-white border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 hover:border-gray-300 hover:shadow-md transition-all duration-300 group dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700">
+                        <i data-lucide="clipboard-list" class="w-5 h-5 mr-2 text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300"></i>
+                        <span class="font-medium text-base">제작과정 살펴보기</span>
+                    </a>
+                </div>
 
             </div>
 

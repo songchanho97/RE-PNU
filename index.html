@@ -16,15 +16,44 @@
                             card: '#1e293b',
                             text: '#f8fafc'
                         }
+                    },
+                    animation: {
+                        'shimmer': 'shimmer 1.5s infinite linear',
+                        'flow-dash': 'flowDash 20s linear infinite',
+                        'flow-dash-reverse': 'flowDashReverse 20s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'float-delayed': 'float 3s ease-in-out 1.5s infinite',
+                        'float-fast': 'float 2s ease-in-out infinite',
+                        'screen-glow': 'screenGlow 3s infinite alternate',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        flowDash: {
+                            'to': { strokeDashoffset: '-100' }
+                        },
+                        flowDashReverse: {
+                            'to': { strokeDashoffset: '100' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        screenGlow: {
+                            '0%': { boxShadow: '0 0 20px rgba(16, 185, 129, 0.2)' },
+                            '100%': { boxShadow: '0 0 40px rgba(16, 185, 129, 0.6)' }
+                        }
                     }
                 }
             }
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -34,22 +63,15 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* Dark Mode Global Overrides */
         html.dark body { background-color: #020617; color: #f8fafc; }
 
-        /* [Page 1] Hero Impact Style */
+        .font-myeongjo { font-family: 'Nanum Myeongjo', serif; }
+
         .hero-visual {
-            background: #050507;
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+            background: #050507; position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white;
         }
         .data-matrix {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.2) 0%, transparent 80%),
                         linear-gradient(rgba(5, 5, 7, 0.8), rgba(5, 5, 7, 0.8)),
                         url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2072');
@@ -62,187 +84,228 @@
         .btn-b { background: transparent; color: white; border: 1px solid rgba(255, 255, 255, 0.3); }
         .btn-b:hover { transform: translateY(-10px) scale(1.02); background: rgba(255, 255, 255, 0.05); border-color: white; }
 
-        /* [Page 2] Features Styling */
         .feature-card {
             background: #ffffff; border-radius: 3rem; border: 1px solid rgba(0,0,0,0.05);
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer; position: relative; overflow: hidden; height: 100%;
-            display: flex; flex-direction: column;
+            cursor: pointer; position: relative; overflow: hidden; height: 100%; display: flex; flex-direction: column;
         }
-        /* Dark Mode for Feature Card */
         html.dark .feature-card { background: #1e293b; border-color: rgba(255,255,255,0.05); }
-
         .feature-card:hover { transform: translateY(-15px); box-shadow: 0 40px 80px -15px rgba(0,0,0,0.15); }
         html.dark .feature-card:hover { box-shadow: 0 40px 80px -15px rgba(0,0,0,0.5); }
 
         .visual-container { height: 440px; background: #f8fafc; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 10px; transition: background-color 0.5s ease; }
         html.dark .visual-container { background: #0f172a; }
 
-        /* ---------------------------------------------------- */
-        /* Feature 1: Face Mapping (Corrected Visual)           */
-        /* ---------------------------------------------------- */
-        .casting-visual { width: 100%; height: 100%; position: relative; overflow: hidden; background: #1f2937; }
-
-        /* Background: User Provided Image (Full Scene) */
-        .history-background {
+        .overview-card {
+            height: 500px;
+            border-radius: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        html.dark .overview-card { border: 1px solid rgba(255,255,255,0.1); }
+        .overview-card:hover { flex-grow: 1.2; }
+        .overview-bg {
+            position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.7s ease;
+        }
+        .overview-card:hover .overview-bg { transform: scale(1.1); }
+        .overview-overlay {
             position: absolute; inset: 0;
-            background-image: url('https://i.postimg.cc/qMFW2x4s/neoh-eulsajin.png');
-            background-size: cover; background-position: center;
-            /* Slightly dimmed to make UI pop */
-            filter: brightness(0.8);
-            transition: transform 0.5s ease;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 45%, transparent 100%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem;
+            z-index: 40;
+        }
+
+        .casting-visual { width: 100%; height: 100%; position: relative; overflow: hidden; background: #1f2937; }
+        .history-background {
+            position: absolute; inset: 0; background-image: url('https://i.postimg.cc/qMFW2x4s/neoh-eulsajin.png');
+            background-size: cover; background-position: center; filter: brightness(0.8); transition: transform 0.5s ease;
         }
         .feature-card:hover .history-background { transform: scale(1.05); filter: brightness(0.6); }
-
-        /* Left Bottom: User Photo Frame (Cropped Face) */
         .user-photo-frame {
-            position: absolute; bottom: 20px; left: 20px;
-            width: 90px; height: 110px;
-            background: #fff; padding: 4px 4px 20px 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            transform: rotate(-3deg); z-index: 20;
-            border-radius: 2px;
-            transition: transform 0.3s;
+            position: absolute; bottom: 20px; left: 20px; width: 90px; height: 110px;
+            background: #fff; padding: 4px 4px 20px 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            transform: rotate(-3deg); z-index: 20; border-radius: 2px; transition: transform 0.3s;
         }
         .feature-card:hover .user-photo-frame { transform: rotate(0deg) scale(1.05); }
-
-        .photo-placeholder {
-            width: 100%; height: 100%; background: #e5e7eb;
-            overflow: hidden; border: 1px solid #d1d5db;
-            position: relative;
-        }
-        /* Zoom in to show face only */
-        .photo-placeholder img {
-            width: 100%; height: 100%; object-fit: cover;
-            /* 얼굴 중심으로 크롭 (추정) */
-            object-position: center 20%;
-            transform: scale(2);
-        }
+        .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; object-position: center 5%; transform: scale(2); }
         .user-label {
-            position: absolute; bottom: 2px; left: 0; width: 100%; text-align: center;
-            font-family: 'Noto Sans KR', sans-serif; font-size: 10px; font-weight: 900; color: #333;
+            position: absolute; bottom: 4px; left: 0; width: 100%; text-align: center;
+            font-size: 9px; font-weight: 800; color: #475569; font-family: 'Nanum Myeongjo', serif;
         }
-
-        /* Target Spot (On the face in the main image) */
         .target-spot-circle {
-            position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
-            width: 80px; height: 80px;
-            border: 3px dashed #10b981; border-radius: 50%;
-            z-index: 10;
-            box-shadow: 0 0 0 100vmax rgba(0,0,0,0.3); /* Spotlight effect */
-            animation: pulseTarget 2s infinite;
+            position: absolute; top: 11%; left: 69%; transform: translateX(-50%); width: 110px; height: 110px;
+            border: 3px dashed #10b981; border-radius: 50%; z-index: 10;
+            box-shadow: 0 0 0 100vmax rgba(0,0,0,0.3); animation: pulseTarget 2s infinite;
         }
         @keyframes pulseTarget { 0% { border-color: #10b981; transform: translateX(-50%) scale(1); } 50% { border-color: #34d399; transform: translateX(-50%) scale(1.05); } 100% { border-color: #10b981; transform: translateX(-50%) scale(1); } }
-
         .target-text-bubble {
-            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-            background: #10b981; color: white; font-size: 11px; font-weight: 900;
-            padding: 4px 12px; border-radius: 20px; white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #10b981; color: white;
+            font-size: 11px; font-weight: 900; padding: 4px 12px; border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .target-text-bubble::after {
             content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
             border-width: 5px 5px 0; border-style: solid; border-color: #10b981 transparent;
         }
-
-        /* Arrow connecting them */
-        .connection-arrow-svg {
-            position: absolute; inset: 0; pointer-events: none; z-index: 15;
-            width: 100%; height: 100%;
-        }
-        .arrow-line {
-            fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 8 4;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-            animation: dashMove 1s linear infinite;
-        }
+        .connection-arrow-svg { position: absolute; inset: 0; pointer-events: none; z-index: 15; width: 100%; height: 100%; }
+        .arrow-line { fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 8 4; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); animation: dashMove 1s linear infinite; }
         @keyframes dashMove { to { stroke-dashoffset: -12; } }
         .arrow-tip { fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
 
-
-        /* ---------------------------------------------------- */
-        /* Shared & Feature 2, 3 Styling (No Changes)           */
-        /* ---------------------------------------------------- */
-        .adventure-card-mockup {
-            width: 90%; height: 95%; border-radius: 2.5rem; background: white;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;
-            display: flex; flex-direction: column; border: 1px solid #e2e8f0;
-            transform-origin: bottom center;
-            transition: transform 0.4s ease;
-        }
+        .adventure-card-mockup { width: 90%; height: 95%; border-radius: 2.5rem; background: white; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; border: 1px solid #e2e8f0; transition: transform 0.4s ease; transform-origin: bottom center; }
         html.dark .adventure-card-mockup { background: #0f172a; border-color: #334155; }
-
         .feature-card:hover .adventure-card-mockup { transform: scale(1.02); }
-
-        .adventure-img {
-            height: 50%; position: relative;
-            background: url('https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover; background-position: center;
+        .adventure-img { height: 50%; position: relative; background: url('https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; }
+        .adventure-overlay-text {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white; font-size: 0.75rem; font-weight: 500; line-height: 1.4;
+            text-align: left;
         }
-        .adventure-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
-        .adventure-tag { position: absolute; top: 15px; left: 15px; background: rgba(59, 130, 246, 0.9); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 8px; z-index: 10; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.3); }
-        .adventure-overlay-text { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; color: white; font-size: 11px; font-weight: 500; font-style: italic; line-height: 1.5; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .adventure-content { padding: 20px; flex-grow: 1; background: #fff; display: flex; flex-direction: column; gap: 15px; transition: background-color 0.5s ease; }
-        html.dark .adventure-content { background: #0f172a; }
-
-        .adventure-choice { display: flex; gap: 10px; }
-        .choice-btn-mini { flex: 1; background: #fff; border: 1px solid #e2e8f0; font-size: 9px; padding: 12px 8px; border-radius: 12px; color: #475569; font-weight: 700; text-align: center; line-height: 1.4; transition: all 0.2s; }
+        .adventure-tag { position: absolute; top: 15px; left: 15px; background: rgba(59, 130, 246, 0.9); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 8px; }
+        .adventure-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+        .choice-btn-mini { flex: 1; background: #fff; border: 1px solid #e2e8f0; font-size: 9px; padding: 12px 8px; border-radius: 12px; text-align: center; font-weight: 700; color: #475569; transition: all 0.2s; }
         html.dark .choice-btn-mini { background: #1e293b; border-color: #334155; color: #94a3b8; }
-
-        .feature-card:hover .choice-btn-mini { border-color: #cbd5e1; }
-        html.dark .feature-card:hover .choice-btn-mini { border-color: #475569; }
-
-        .choice-btn-mini.active { border-color: #3b82f6; background: #eff6ff; color: #2563eb; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15); }
+        .choice-btn-mini.active { border-color: #3b82f6; background: #eff6ff; color: #2563eb; }
         html.dark .choice-btn-mini.active { background: #172554; border-color: #3b82f6; color: #60a5fa; }
 
-        .feature-card:hover .choice-btn-mini:not(.active):hover { background: #f8fafc; transform: translateY(-2px); }
-        html.dark .feature-card:hover .choice-btn-mini:not(.active):hover { background: #334155; }
-
-        .result-btn-mockup { width: 100%; padding: 14px; background: #0f172a; color: white; border-radius: 14px; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); transition: transform 0.2s; }
-        html.dark .result-btn-mockup { background: #020617; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .feature-card:hover .result-btn-mockup { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.3); }
-
-        .creative-explosion { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
-        .phone-frame { width: 140px; height: 270px; background: #0f172a; border-radius: 24px; border: 6px solid #1e293b; position: relative; z-index: 20; transform: rotate(-3deg); box-shadow: 0 40px 80px rgba(0,0,0,0.4); overflow: hidden; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .feature-card:hover .phone-frame { transform: rotate(0deg) scale(1.1) translateY(-10px); box-shadow: 0 50px 100px rgba(0,0,0,0.5); }
-        .phone-screen { width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1526749837599-b4eba9fd855e?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-        .phone-screen::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(0,0,0,0.8) 100%); }
-        .shorts-title-overlay { position: absolute; top: 25%; left: 0; right: 0; text-align: center; font-family: 'Noto Sans KR', sans-serif; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); transform: rotate(-5deg); z-index: 10; }
-        .shorts-title-main { font-size: 18px; font-weight: 900; background: #ef4444; color: white; padding: 4px 10px; display: inline-block; margin-bottom: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .shorts-title-sub { font-size: 10px; font-weight: 700; opacity: 1; text-shadow: 0 1px 2px black; }
-        .shorts-ui-right { position: absolute; right: 8px; bottom: 60px; display: flex; flex-direction: column; gap: 12px; align-items: center; z-index: 10; }
-        .ui-icon { width: 28px; height: 28px; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); border-radius: 50%; display: flex; items-center; justify-content: center; color: white; font-size: 10px; border: 1px solid rgba(255,255,255,0.2); }
-        .shorts-info { position: absolute; bottom: 20px; left: 12px; color: white; text-align: left; z-index: 10; width: 75%; }
-        .shorts-user { font-size: 9px; font-weight: 800; display: flex; items-center; gap: 5px; margin-bottom: 5px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,1); }
-        .shorts-desc { font-size: 9px; font-weight: 400; opacity: 1; line-height: 1.3; color: #e2e8f0; text-shadow: 0 1px 2px rgba(0,0,0,1); }
-        .progress-bar { position: absolute; bottom: 0; left: 0; width: 45%; height: 3px; background: #ef4444; z-index: 10; box-shadow: 0 0 10px #ef4444; }
-        .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; items-center; justify-content: center; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.4); transition: transform 0.3s; }
-        .feature-card:hover .play-overlay { transform: translate(-50%, -50%) scale(1.2); background: rgba(255,40,40,0.8); border: none; }
-        .play-icon { width: 0; height: 0; border-style: solid; border-width: 6px 0 6px 12px; border-color: transparent transparent transparent white; margin-left: 2px; }
-        .comic-card { position: absolute; background: white; border: 3px solid #000; box-shadow: 5px 10px 20px rgba(0,0,0,0.2); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: transform 0.4s ease; }
-        .comic-card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.1); }
-        .feature-card:hover .comic-1 { transform: rotate(15deg) translate(10px, -10px); }
-        .feature-card:hover .comic-2 { transform: rotate(-10deg) translate(-10px, 10px); }
-        .comic-1 { width: 110px; height: 90px; top: 10%; right: 5%; transform: rotate(12deg); z-index: 5; }
-        .comic-2 { width: 100px; height: 110px; bottom: 10%; left: 5%; transform: rotate(-8deg); z-index: 6; }
-        .speech-bubble { position: absolute; background: #fff; border: 2px solid #000; border-radius: 10px; padding: 4px 6px; font-size: 8px; font-weight: 800; color: #000; text-align: center; z-index: 20; box-shadow: 2px 2px 0 rgba(0,0,0,0.1); line-height: 1.1; }
-        .speech-bubble::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); border-width: 4px 4px 0; border-style: solid; border-color: #000 transparent; display: block; width: 0; }
-
-        /* [Page 3] Intent Graphics */
         .intent-visual { width: 100%; height: 220px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; position: relative; }
-        .crown-float { animation: floatCrown 2.5s infinite ease-in-out; filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.8)); }
-        @keyframes floatCrown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        .fade-in { animation: fadeIn 1s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .section-padding { padding: 140px 0; }
-
-        /* Dark Toggle Animation */
         .toggle-icon { transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
         html.dark .toggle-icon { transform: rotate(180deg); }
+
+        .cinema-container {
+            width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center;
+            background: #111; overflow: hidden;
+        }
+        .cinema-screen {
+            width: 90%; aspect-ratio: 21/9;
+            background: #000;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+            overflow: hidden;
+            transform: perspective(1000px) rotateX(2deg);
+            transition: all 0.5s ease;
+        }
+        .feature-card:hover .cinema-screen {
+            transform: perspective(1000px) rotateX(0deg) scale(1.05);
+            box-shadow: 0 0 60px rgba(16, 185, 129, 0.8);
+        }
+        .cinema-video-bg {
+            width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+        }
+        .cinema-overlay {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: center; items-center;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            text-align: center;
+        }
+        .play-button-cinema {
+            width: 60px; height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+        }
+        .feature-card:hover .play-button-cinema {
+            background: #10b981; border-color: #10b981; transform: scale(1.2);
+        }
+        .play-triangle {
+            width: 0; height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 18px solid white;
+            margin-left: 4px;
+        }
+
+        /* Re-usable cinema screen style based on Feature 3 */
+        .cinema-frame-shared {
+            position: relative;
+            width: 16rem; /* w-64 */
+            height: 10rem; /* h-40 */
+            background: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.5s duration-500;
+        }
+
+        /* New Intent Detail Styles */
+        .strategy-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2.5rem;
+            padding: 3rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .strategy-box:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+        }
+        .label-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        /* Graph Styles */
+        .graph-container .bar-fill {
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .graph-container.active .bar-fill {
+            width: var(--final-width);
+        }
+
+        /* Vertical Graph Bars */
+        .v-bar {
+            height: 0;
+            transition: height 1.5s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .graph-container.active .v-bar {
+            height: var(--final-height);
+        }
+
+        /* Trend Line Animation */
+        .trend-path {
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            transition: stroke-dashoffset 2.5s ease-in-out;
+        }
+        .graph-container.active .trend-path {
+            stroke-dashoffset: 0;
+        }
+
+        /* Sync Logic Visual */
+        .node-pulse {
+            animation: nodePulse 2s infinite;
+        }
+        @keyframes nodePulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 20px rgba(79, 70, 229, 0.4); }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
     </style>
     <script>
-        // Check local storage or system preference on load
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.theme === 'dark') {
             document.documentElement.classList.add('dark')
         } else {
             document.documentElement.classList.remove('dark')
@@ -271,23 +334,18 @@
                 <span class="font-black text-2xl tracking-tighter text-white mix-blend-difference">RE-PNU</span>
             </div>
             <div class="flex items-center gap-12">
-                <div class="hidden md:flex space-x-12 text-[10px] font-black text-white/60 uppercase tracking-[0.3em]">
+                <div class="hidden md:flex space-x-8 text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">
                     <a href="#intro" class="hover:text-white transition mix-blend-difference">01 Intro</a>
-                    <a href="#features" class="hover:text-white transition mix-blend-difference">02 Features</a>
-                    <a href="#intent" class="hover:text-white transition mix-blend-difference">03 Intent</a>
-                    <a href="#team" class="hover:text-white transition mix-blend-difference">04 Team</a>
+                    <a href="#overview" class="hover:text-white transition mix-blend-difference">02 Overview</a>
+                    <a href="#features" class="hover:text-white transition mix-blend-difference">03 Features</a>
+                    <a href="#intent" class="hover:text-white transition mix-blend-difference">04 Intent</a>
+                    <a href="#team-identity" class="hover:text-white transition mix-blend-difference">05 Team</a>
+                    <a href="#collab" class="hover:text-white transition mix-blend-difference">06 Collab</a>
                 </div>
-                <!-- Dark Mode Toggle Button -->
                 <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all group">
                     <div class="toggle-icon relative w-5 h-5">
-                        <!-- Sun Icon (Visible in Light Mode) -->
-                        <svg class="absolute inset-0 w-full h-full opacity-100 dark:opacity-0 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <!-- Moon Icon (Visible in Dark Mode) -->
-                        <svg class="absolute inset-0 w-full h-full opacity-0 dark:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
+                        <svg class="absolute inset-0 w-full h-full opacity-100 dark:opacity-0 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg class="absolute inset-0 w-full h-full opacity-0 dark:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                     </div>
                 </button>
             </div>
@@ -317,168 +375,428 @@
                     <button onclick="window.location.href='data_process.html'" class="btn-premium btn-a px-16 py-8 rounded-2xl text-xl font-black w-full sm:w-80 shadow-[0_20px_60px_rgba(79,70_229,0.4)] uppercase tracking-widest">
                         데이터의 여정
                     </button>
-        <button
-            onclick="window.location.href='https://re-pnu-973053081899.us-west1.run.app/'"
-            class="btn-premium btn-b px-16 py-8 rounded-2xl text-xl font-black w-full sm:w-80 backdrop-blur-md uppercase tracking-widest">
-            시대 체험하기
-        </button>
+
+                    <button onclick="window.open('https://aistudio.google.com/apps/drive/10KDN0-1o16hVrSLEzgxcKtVqlsR6Uxas?fullscreenApplet=true&showPreview=true&showAssistant=true', '_blank')" class="btn-premium btn-b px-16 py-8 rounded-2xl text-xl font-black w-full sm:w-80 backdrop-blur-md uppercase tracking-widest">
+                        시대 체험하기
+                    </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- [Page 2] Service Features -->
-    <section id="features" class="section-padding bg-white dark:bg-slate-900 transition-colors duration-500">
-        <div class="max-w-7xl mx-auto px-8">
-            <div class="mb-24 text-left">
-                <h2 class="text-sm font-black text-indigo-600 dark:text-indigo-400 tracking-[0.5em] uppercase mb-8">02 Service Features</h2>
-                <h3 class="text-5xl sm:text-7xl font-black tracking-tighter leading-tight dark:text-white">보는 것을 넘어<br><span class="text-indigo-600 dark:text-indigo-400 italic">직접 들어가는</span> 경험</h3>
+    <!-- [Page 2] Service Overview -->
+    <section id="overview" class="section-padding bg-slate-50 dark:bg-slate-800 transition-colors duration-500 relative overflow-hidden flex items-center">
+        <div class="max-w-7xl mx-auto px-8 w-full">
+            <div class="mb-20 text-center">
+                <h2 class="text-sm font-black text-indigo-500 dark:text-indigo-400 tracking-[0.5em] uppercase mb-4">02 Service Overview</h2>
+                <h3 class="text-4xl sm:text-6xl font-black tracking-tighter leading-tight dark:text-white mb-6">
+                    과거를 만나는<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-emerald-600">두 가지 특별한 방법</span>
+                </h3>
+                <div class="flex justify-center mb-12">
+                    <div class="flex items-center gap-4 bg-white dark:bg-slate-900 px-8 py-3 rounded-full shadow-lg border border-slate-200 dark:border-slate-700">
+                        <div class="w-3 h-3 bg-gray-900 dark:bg-white rounded-full animate-pulse"></div>
+                        <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest">Based on 80 Years of Data</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <!-- Feature 1: Face Mapping (Final Visual) -->
-                <div class="feature-card group">
-                    <div class="visual-container bg-[#2d3748] p-0 overflow-hidden relative">
-                        <div class="casting-visual">
-                            <!-- Background: User Provided Image (Full Scene) -->
-                            <div class="history-background"></div>
-
-                            <!-- Arrow Connecting Photo to Target -->
-                            <svg class="connection-arrow-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                <!-- Start: 15% Left, 75% Bottom -> End: 50% Left, 25% Top -->
-                                <path class="arrow-line" d="M 15 75 Q 25 50 48 28" vector-effect="non-scaling-stroke" />
-                                <polygon class="arrow-tip" points="48,28 43,32 44,23" transform="rotate(15 48 28)" />
-                            </svg>
-
-                            <!-- User Photo Frame (Left Bottom - Cropped Face) -->
-                            <div class="user-photo-frame">
-                                <div class="photo-placeholder">
-                                    <img src="https://i.postimg.cc/qMFW2x4s/neoh-eulsajin.png" alt="My Photo">
-                                </div>
-                                <div class="user-label">내 사진</div>
-                            </div>
-
-                            <!-- Target Spot (Center Top - Hero) -->
-                            <div class="target-spot-circle">
-                                <div class="target-text-bubble">주인공</div>
-                            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 relative">
+                <!-- 카드 1: 다시, 봄 (Re-View) - Sliced Visual 적용 -->
+                <div class="overview-card group" onclick="document.getElementById('content-1-detail').scrollIntoView({behavior: 'smooth'})">
+                    <div class="absolute inset-0 w-full h-full bg-black">
+                        <div class="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" style="clip-path: polygon(0 0, 100% 0, 100% 40%, 0 25%); z-index: 3;">
+                            <img src="https://i.postimg.cc/FKSgKByL/sgver.png" class="w-full h-full object-cover filter grayscale contrast-125 brightness-75" style="object-position: center 20%;" alt="Past Record">
+                        </div>
+                        <div class="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" style="clip-path: polygon(0 25%, 100% 40%, 100% 80%, 0 65%); z-index: 2;">
+                            <img src="https://i.postimg.cc/Kc3khM5j/qfhwef.png" class="w-full h-full object-cover filter brightness-90" style="object-position: center center;" alt="Process">
+                        </div>
+                        <div class="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" style="clip-path: polygon(0 65%, 100% 80%, 100% 100%, 0 100%); z-index: 1;">
+                            <img src="https://me.pusan.ac.kr/data/media/202202/%EB%B6%80%EC%82%B0%EB%8C%80%20%EC%82%AC%EC%A7%843-1.jpg" class="w-full h-full object-cover filter saturate-120" style="object-position: center 70%;" alt="Present PNU">
                         </div>
                     </div>
-                    <div class="p-12 text-center">
-                        <h4 class="text-2xl font-black mb-6 text-indigo-600 dark:text-indigo-400">내가 주인공이 되는<br>'실체적 몰입'</h4>
-                        <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">특정 인물 사진이 아닌, 당신의 얼굴을 인식하여 역사적 현장의 인물로 매핑합니다. 관찰자가 아닌 당사자가 되는 경험을 제공합니다.</p>
+                    <div class="overview-overlay relative">
+                        <div class="mb-4 text-violet-300 font-bold tracking-widest text-sm uppercase flex items-center gap-2">
+                            <span class="px-2 py-1 bg-violet-500/20 rounded border border-violet-500/30 backdrop-blur-sm">Content 01</span>
+                            <span class="drop-shadow-md">Seeing History</span>
+                        </div>
+                        <h4 class="text-5xl font-black text-white mb-2 leading-none tracking-tighter drop-shadow-lg">다시, 봄<br><span class="text-2xl font-light opacity-90 font-serif">Re-View</span></h4>
+                        <div class="text-lg font-bold text-violet-200 mb-6 italic drop-shadow-md">"기록이 서사가 되다"</div>
+                        <p class="text-gray-100 text-lg mb-8 font-light leading-snug drop-shadow-md">텍스트 기록을 AI가 감각적인 비주얼로 그려냅니다.<br>스토리북과 몰입감 있는 영상으로 감상하는 80년의 풍경.</p>
+                        <div class="flex items-center text-white font-bold uppercase tracking-wider text-sm group-hover:translate-x-2 transition-transform drop-shadow-md">
+                            View Works <span class="ml-2">→</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Feature 2: Adventure Choice (Interactive Lab) -->
-                <div class="feature-card group bg-[#f8fafc] border-none shadow-inner">
-                    <div class="visual-container bg-[#e2e8f0]/40">
-                        <div class="adventure-card-mockup">
-                            <div class="adventure-img" style="background-image: url('https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=2070&auto=format&fit=crop');">
-                                <!-- Space/Rocket Image -->
-                                <div class="adventure-tag uppercase tracking-tighter">2050s PNU FUTURE</div>
-                                <div class="adventure-overlay-text">
-                                    "캠퍼스 상공을 가로지르는 하이퍼 루프와 연구소의 로켓 발사대가 보입니다..."
+                <!-- 카드 2: 다시, 삶 (Re-Live) - Character Hero 적용 -->
+                <div class="overview-card group" onclick="document.getElementById('content-2-detail').scrollIntoView({behavior: 'smooth'})">
+                    <div class="overview-bg" style="background-image: url('https://png.pngtree.com/background/20230401/original/pngtree-spotlight-performance-concert-stage-decoration-pattern-picture-image_2249339.jpg'); filter: brightness(0.9);"></div>
+                    <div class="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-full h-[520px] z-10 flex items-end justify-center pointer-events-none">
+                        <div class="relative w-[500px] h-[500px] transition-transform duration-500 group-hover:scale-105 origin-bottom">
+                            <!-- INSERT YOURSELF 배지 -->
+                            <div class="absolute top-[40%] left-1/2 -translate-x-1/2 text-center z-40 w-full transform -rotate-3">
+                                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xs px-6 py-2.5 rounded-full shadow-[0_0_25px_rgba(16,185,129,0.5)] border-2 border-white inline-flex items-center gap-2 group-hover:scale-110 transition-transform duration-300 pointer-events-auto">
+                                    <span class="relative flex h-3 w-3">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                                    </span>
+                                    INSERT YOURSELF
                                 </div>
                             </div>
-                            <div class="adventure-content">
-                                <p class="adventure-main-text italic font-bold text-lg text-slate-800">당신의 다음 행동은?</p>
-                                <div class="adventure-choice">
-                                    <div class="choice-btn-mini active">우주 항공 연구소 로켓 점검</div>
-                                    <div class="choice-btn-mini">캠퍼스 에어 택시 탑승</div>
+                            <!-- 업데이트된 히어로 이미지 (명암 최적화) -->
+                            <img src="https://i.postimg.cc/0jcvTZrg/wevvwew.png" alt="Living History Duo" class="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" style="mask-image: linear-gradient(to bottom, black 95%, transparent 100%);">
+                        </div>
+                    </div>
+                    <div class="overview-overlay relative">
+                        <div class="mb-4 text-emerald-300 font-bold tracking-widest text-sm uppercase flex items-center gap-2">
+                            <span class="px-2 py-1 bg-emerald-500/20 rounded border border-emerald-500/30">Content 02</span>
+                            <span>Living History</span>
+                        </div>
+                        <h4 class="text-5xl font-black text-white mb-2 leading-none tracking-tighter">다시, 삶<br><span class="text-2xl font-light opacity-80 font-serif">Re-Live</span></h4>
+                        <div class="text-lg font-bold text-emerald-200 mb-6 italic">"내가 기록이 되다"</div>
+                        <p class="text-gray-100 text-lg mb-8 font-light leading-snug drop-shadow-lg">나의 선택이 곧 역사가 되는 체험.<br>결과물로 나만의 웹툰과 하이라이트 숏츠를 소장하세요.</p>
+                        <div class="flex items-center text-white font-bold uppercase tracking-wider text-sm group-hover:translate-x-2 transition-transform">
+                            Be the Hero <span class="ml-2">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [Page 3] Detailed Features -->
+    <section id="features" class="section-padding bg-white dark:bg-slate-900 transition-colors duration-500 border-t border-slate-100 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="mb-24 text-left">
+                <h2 class="text-sm font-black text-indigo-600 dark:text-indigo-400 tracking-[0.5em] uppercase mb-8">03 Detailed Features</h2>
+                <h3 class="text-5xl sm:text-7xl font-black tracking-tighter leading-tight dark:text-white">RE-PNU<br>기능 상세 보기</h3>
+            </div>
+
+            <!-- Content 1 Detail Section -->
+            <div id="content-1-detail" class="mb-32">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-1 bg-violet-500"></div>
+                    <h4 class="text-3xl font-black dark:text-white"><span class="text-violet-500">다시, 봄</span> : Re-View</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <!-- Feature 2 (Moved to 1st position): Emotional Storytelling -->
+                    <div class="feature-card group text-center">
+                        <div class="visual-container bg-[#f1f5f9] dark:bg-[#0f172a] p-0 overflow-hidden relative">
+                            <div class="absolute inset-0 flex flex-col p-4 gap-4">
+                                <div class="flex-1 w-full rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                                    <img src="https://i.postimg.cc/GpdwtLbp/rhobrhobfrh.png" class="w-full h-full object-cover" alt="Fact">
                                 </div>
-                                <div class="result-btn-mockup">
-                                    📖 미래 시나리오 확인하기
+                                <div class="flex justify-center -my-6 relative z-10">
+                                    <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center shadow-2xl border-4 border-white dark:border-slate-800">
+                                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1 w-full rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                                    <img src="https://i.postimg.cc/7PMzJX3d/srijfih.png" class="w-full h-full object-cover" alt="Story">
+                                </div>
+                            </div>
+                            <div class="absolute bottom-6 right-6 px-4 py-1.5 bg-indigo-600/90 text-[10px] text-white font-black rounded-lg uppercase tracking-widest backdrop-blur-md">Story Analysis</div>
+                        </div>
+                        <div class="p-12">
+                            <h4 class="text-2xl font-black mb-6 text-indigo-600 dark:text-indigo-400">데이터가 이야기가 되다<br>'스토리텔링'</h4>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">
+                                방대한 사료에서 시대별 정체성을 대변하는 키워드를 추출합니다. 딱딱한 역사적 사실들이 조원들의 정성스러운 데이터 수집과 AI를 거쳐 울림이 있는 하나의 서사로 완성됩니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 1 (Moved to 2nd position): Visual Restoration -->
+                    <div class="feature-card group text-center">
+                        <div class="visual-container bg-[#f1f5f9] dark:bg-[#0f172a] p-4 overflow-hidden relative">
+                            <img src="https://i.postimg.cc/2y5Kvyt3/sfjsjf.png" alt="복원된 사진" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-90">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
+                            <div class="absolute top-6 left-6 px-4 py-1.5 bg-violet-600/90 text-[10px] text-white font-black rounded-lg uppercase tracking-widest backdrop-blur-md">Restore AI</div>
+                        </div>
+                        <div class="p-12">
+                            <h4 class="text-2xl font-black mb-6 text-violet-600 dark:text-violet-400">상상을 현실로<br>'시각적 복원'</h4>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">
+                                텍스트로만 존재하던 건조한 기록을 AI가 분석하여 구체적인 장면으로 그려냅니다. 활자 너머 상상 속에만 있던 80년 전 풍경을 눈앞에 생생하게 재현합니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3: Moving Archive -->
+                    <div class="feature-card group text-center">
+                        <div class="visual-container bg-[#f1f5f9] dark:bg-[#0f172a] p-0 overflow-hidden relative">
+                            <img src="https://i.postimg.cc/Wb5sQJVH/sda.png" alt="무빙 아카이브" class="w-full h-full object-cover transition-transform duration-[10s] linear group-hover:scale-125">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute top-6 left-6 px-4 py-1.5 bg-emerald-600/90 text-[10px] text-white font-black rounded-lg uppercase tracking-widest backdrop-blur-md">Dynamic View</div>
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-500 transition-all duration-300 scale-90 group-hover:scale-110">
+                                    <div class="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-white border-b-[8px] border-b-transparent ml-1"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-12 text-center">
-                        <h4 class="text-2xl font-black mb-6 text-blue-600 dark:text-blue-400">직접 결정하는<br>'시대와 상황'</h4>
-                        <p class="text-gray-600 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">원하는 <span class="font-bold">시대</span>를 고르고, 갈림길에서 <span class="font-bold">상황</span>을 선택하세요. AI가 정해준 것이 아닌 사용자의 주도적 참여로 고유한 서사를 만듭니다.</p>
+                        <div class="p-12">
+                            <h4 class="text-2xl font-black mb-6 text-sky-600 dark:text-sky-400">시간을 재생하다<br>'무빙 아카이브'</h4>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">
+                                멈춘 사진에 움직임(Motion)과 현장의 소리를 더해 영상으로 확장합니다. 박제된 역사가 아닌, 흐르는 시간 속에서 그날의 분위기를 입체적으로 감상하세요.
+                            </p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Feature 3: Production Masterpiece Visual (Interactive) -->
-                <div class="feature-card group">
-                    <div class="visual-container bg-[#f0fff4]">
-                        <div class="production-stage">
-                            <!-- Creative Explosion (Center Stage) -->
-                            <div class="creative-explosion">
-                                <!-- Webtoon Card 1 -->
-                                <div class="comic-card comic-1">
-                                    <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?q=80&w=2070&auto=format&fit=crop" alt="Webtoon Scene 1">
-                                    <div class="speech-bubble" style="top: 10px; right: 10px; border-radius: 50%; width: 40px; height: 30px; display:flex; align-items:center; justify-content:center;">"가자!"</div>
+            <!-- Content 2 Detail Section -->
+            <div id="content-2-detail">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-1 bg-emerald-500"></div>
+                    <h4 class="text-3xl font-black dark:text-white"><span class="text-emerald-500">다시, 삶</span> : Re-Live</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <!-- Feature 1: Face Mapping -->
+                    <div class="feature-card group">
+                        <div class="visual-container bg-[#2d3748] p-0 overflow-hidden relative">
+                            <div class="casting-visual">
+                                <div class="history-background"></div>
+                                <svg class="connection-arrow-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <path class="arrow-line" d="M 18 72 Q 35 60 63 29" vector-effect="non-scaling-stroke" />
+                                    <polygon class="arrow-tip" points="63,29 58,33 59,24" transform="rotate(-40 63 29)" />
+                                </svg>
+                                <div class="user-photo-frame">
+                                    <div class="photo-placeholder"><img src="https://i.postimg.cc/pVjxZBWV/yeon-yein-sajin.jpg" alt="My Photo"></div>
+                                    <div class="user-label">내 사진</div>
                                 </div>
-
-                                <!-- Webtoon Card 2 -->
-                                <div class="comic-card comic-2">
-                                    <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop" alt="Webtoon Scene 2">
-                                    <div class="speech-bubble" style="bottom: 15px; left: 10px;">두근두근</div>
-                                    <div class="absolute top-0 right-0 bg-yellow-400 text-[8px] font-black px-1 border-l-2 border-b-2 border-black">EP.01</div>
+                                <div class="target-spot-circle">
+                                    <div class="target-text-bubble">주인공</div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="p-12 text-center">
+                            <h4 class="text-2xl font-black mb-6 text-indigo-600 dark:text-indigo-400">내가 주인공이 되는<br>'실체적 몰입'</h4>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">특정 인물 사진이 아닌, 당신의 얼굴을 인식하여 역사적 현장의 인물로 매핑합니다. 관찰자가 아닌 당사자가 되는 경험을 제공합니다.</p>
+                        </div>
+                    </div>
 
-                                <!-- Main Phone Element -->
-                                <div class="phone-frame">
-                                    <div class="phone-screen">
-                                        <!-- Title Overlay -->
-                                        <div class="shorts-title-overlay">
-                                            <div class="shorts-title-main">1979 VLOG</div>
-                                            <div class="shorts-title-sub">그날의 함성 속으로</div>
-                                        </div>
+                    <!-- Feature 2: Choice -->
+                    <div class="feature-card group bg-[#f8fafc] border-none shadow-inner">
+                        <div class="visual-container bg-[#e2e8f0]/40">
+                            <div class="adventure-card-mockup">
+                                <!-- Updated Image URL -->
+                                <div class="adventure-img" style="background-image: url('https://i.postimg.cc/QtCVHG3S/erhigie.png');">
+                                    <div class="adventure-tag uppercase tracking-tighter">2050s PNU FUTURE</div>
+                                    <div class="adventure-overlay-text">"캠퍼스 상공을 가로지르는 하이퍼 루프와 연구소의 로켓 발사대가 보입니다..."</div>
+                                </div>
+                                <div class="adventure-content">
+                                    <p class="adventure-main-text italic font-bold text-lg text-slate-800">당신의 다음 행동은?</p>
+                                    <div class="adventure-choice">
+                                        <div class="choice-btn-mini active">우주 항공 연구소 로켓 점검</div>
+                                        <div class="choice-btn-mini">캠퍼스 에어 택시 탑승</div>
+                                    </div>
+                                    <!-- Removed book icon and future scenario check text as requested -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-12 text-center">
+                            <h4 class="text-2xl font-black mb-6 text-blue-600 dark:text-blue-400">직접 결정하는<br>'시대와 상황'</h4>
+                            <p class="text-gray-600 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">원하는 <span class="font-bold">시대</span>를 고르고, 갈림길에서 <span class="font-bold">상황</span>을 선택하세요. AI가 정해준 것이 아닌 사용자의 주도적 참여로 고유한 서사를 만듭니다.</p>
+                        </div>
+                    </div>
 
-                                        <!-- UI Icons -->
-                                        <div class="shorts-ui-right">
-                                            <div class="ui-icon">♥ 1.2k</div>
-                                            <div class="ui-icon">💬 342</div>
-                                            <div class="ui-icon">↗</div>
-                                        </div>
-
-                                        <!-- Bottom Info -->
-                                        <div class="shorts-info">
-                                            <div class="shorts-user">
-                                                <div class="w-4 h-4 rounded-full bg-indigo-500 border border-white"></div>
-                                                user_pnu_1979
-                                            </div>
-                                            <p class="shorts-desc">
-                                                지금 정문 앞 상황입니다.<br>
-                                                모두가 하나되어... <span class="text-blue-300">#부마항쟁 #부산대</span>
-                                            </p>
-                                        </div>
-
-                                        <!-- Progress Bar -->
-                                        <div class="progress-bar"></div>
-
-                                        <!-- Play Button Overlay -->
-                                        <div class="play-overlay">
-                                            <div class="play-icon"></div>
+                    <!-- Feature 3: Cinematic Shorts -->
+                    <div class="feature-card group">
+                        <div class="visual-container bg-[#050507]">
+                            <div class="cinema-container">
+                                <div class="cinema-screen">
+                                    <div class="cinema-video-bg"></div>
+                                    <div class="cinema-overlay">
+                                        <h5 class="text-2xl font-black mb-1 text-emerald-400 tracking-widest uppercase">My Cinematic</h5>
+                                        <p class="text-xs font-light opacity-80 mb-4 tracking-wider">Based on your choices</p>
+                                        <div class="play-button-cinema">
+                                            <div class="play-triangle"></div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-12 text-center">
-                        <h4 class="text-2xl font-black mb-6 text-emerald-600 dark:text-emerald-400">흥미 폭발!<br>'쇼츠 & 웹툰 생산'</h4>
-                        <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">복잡한 과정은 없습니다. 시뮬레이션 종료 즉시, 내 스토리가 담긴 <span class="font-bold">숏폼 영상과 인스타툰</span>이 자동 생성되어 바로 공유할 수 있습니다.</p>
+                        <div class="p-12 text-center">
+                            <h4 class="text-2xl font-black mb-6 text-emerald-600 dark:text-emerald-400">선택이 만든 영화<br>'시네마틱 숏폼'</h4>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm leading-relaxed font-light text-justify">당신이 수집한 <span class="font-bold">가치(Value)</span>와 선택한 순간들이 모여 한 편의 예고편이 됩니다. 단순한 결과 공유를 넘어, 주인공으로서의 여정을 <span class="font-bold">영화 같은 숏폼</span>으로 소장하세요.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- [Page 3] Planning Intention -->
+    <!-- [Page 4] Planning Intention (Enhanced & Interactive) -->
     <section id="intent" class="section-padding bg-[#050507] text-white relative overflow-hidden dark:bg-[#020617] transition-colors duration-500">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-10 pointer-events-none"><div class="absolute top-1/4 right-0 w-[800px] h-[800px] bg-indigo-600 rounded-full blur-[250px]"></div></div>
-        <div class="max-w-7xl mx-auto px-8 relative z-10 text-center">
-            <div class="mb-32">
-                <h2 class="text-sm font-black text-indigo-400 tracking-[0.5em] uppercase mb-8">03 Planning Intention</h2>
-                <h3 class="text-5xl sm:text-7xl font-black tracking-tighter">왜 RE-PNU 인가?</h3>
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+            <div class="mb-20 text-center">
+                <h2 class="text-sm font-black text-indigo-400 tracking-[0.5em] uppercase mb-8">04 Planning Intention</h2>
+                <h3 class="text-5xl sm:text-7xl font-black tracking-tighter mb-4 text-white">RE-PNU: 기획의 본질</h3>
+                <p class="text-xl text-gray-400 font-light max-w-3xl mx-auto">우리는 80년의 기록이 단순한 아카이브를 넘어,<br><span class="text-indigo-400 font-bold italic">살아있는 서사</span>로 기능해야 하는 이유를 찾았습니다.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
-                <!-- Intention 1 -->
+            <!-- Detailed Logic Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+                <!-- 1. [문제 인식] (Vertical Graph Restored) -->
+                <div class="strategy-box group overflow-visible h-full flex flex-col">
+                    <div class="absolute top-8 right-8 opacity-20 group-hover:opacity-100 transition-all duration-500">
+                        <svg class="w-12 h-12 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13" />
+                        </svg>
+                    </div>
+                    <span class="label-badge bg-red-500/20 text-red-400 border border-red-500/30">문제 인식</span>
+                    <h4 class="text-2xl font-black mb-6 text-white leading-tight">잠들어 있는 ‘기억’을 깨우는<br>‘시각적 이미지’</h4>
+                    <div class="space-y-6 flex-1">
+                        <p class="text-sm text-gray-300 leading-relaxed font-light">부산대 80년의 기억은 도서관 텍스트 속에 잠들어 있습니다. ‘보는 것’에 익숙한 현 세대에게 텍스트 중심 기록은 외면받고 있습니다.</p>
+
+                        <!-- Vertical Comparison Graph -->
+                        <div class="graph-container flex items-end justify-around h-48 p-6 bg-white/5 rounded-2xl border border-white/5 group-hover:border-red-500/40 transition-all duration-500 relative">
+                             <!-- Grid Lines (Background) -->
+                            <div class="absolute inset-0 p-6 flex flex-col justify-between pointer-events-none opacity-10 z-0">
+                                <div class="w-full h-px bg-white border-t border-dashed border-gray-400"></div>
+                                <div class="w-full h-px bg-white border-t border-dashed border-gray-400"></div>
+                                <div class="w-full h-px bg-white border-t border-dashed border-gray-400"></div>
+                                <div class="w-full h-px bg-white border-t border-dashed border-gray-400"></div>
+                            </div>
+
+                            <!-- Title Label -->
+                            <div class="absolute top-4 left-0 w-full text-center z-20">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">텍스트 vs 숏폼 이용률 비교</p>
+                            </div>
+
+                            <!-- Bar 1: Reading -->
+                            <div class="flex flex-col items-center gap-3 flex-1 z-10 h-full justify-end">
+                                <div class="flex flex-col items-center w-full justify-end h-full">
+                                    <span class="text-xs font-black text-gray-400 mb-2">43%</span>
+                                    <div class="v-bar w-14 bg-gray-600 rounded-t-md relative group-hover:bg-gray-500 transition-colors" style="--final-height: 43%"></div>
+                                </div>
+                                <span class="text-[10px] text-gray-400 font-bold tracking-tighter">성인 독서율</span>
+                            </div>
+
+                            <!-- Bar 2: Short-form -->
+                            <div class="flex flex-col items-center gap-3 flex-1 z-10 h-full justify-end">
+                                <div class="flex flex-col items-center w-full justify-end h-full">
+                                    <span class="text-xs font-black text-red-500 mb-2">89%</span>
+                                    <div class="v-bar w-14 bg-gradient-to-t from-red-600 to-red-400 rounded-t-md shadow-[0_0_20px_rgba(220,38,38,0.5)] relative" style="--final-height: 89%">
+                                        <div class="absolute -top-1 left-0 w-full h-1 bg-white opacity-20 blur-[1px]"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-red-400 font-bold uppercase tracking-tighter">Z세대 숏폼</span>
+                            </div>
+                        </div>
+                        <div class="pt-4 mt-auto">
+                            <p class="text-[9px] text-gray-500 italic mb-2">출처: 문체부 2023 독서실태, 오픈서베이 트렌드 리포트</p>
+                            <p class="text-sm text-white font-bold leading-relaxed">멈춰 있는 텍스트 기록을 동적인 ‘시각적 엔터테인먼트’로 전환하여 정보 접근의 장벽을 낮춥니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. [솔루션] (Identity Sync Visual) -->
+                <div class="strategy-box group border-indigo-500/20 bg-indigo-500/5 h-full flex flex-col">
+                    <span class="label-badge bg-indigo-500 text-white">솔루션</span>
+                    <h4 class="text-2xl font-black mb-6 text-white leading-tight">관찰자를 넘어,<br>‘정체성’을 잇는 ‘감정’의 동기화</h4>
+                    <div class="space-y-6 flex-1">
+                        <p class="text-sm text-gray-300 leading-relaxed font-light">역사가 ‘남의 역사’가 아닌 ‘나의 이야기’가 될 때 진정한 공감이 시작됩니다. 정보가 자신과 관련될 때 깊은 몰입과 기억이 형성됩니다.</p>
+
+                        <!-- Visual Sync Interaction (Instead of % graph) -->
+                        <div class="graph-container flex items-center justify-center p-6 bg-indigo-950/30 rounded-2xl border border-indigo-500/10">
+                            <div class="relative w-full flex justify-between items-center px-4">
+                                <div class="w-12 h-12 rounded-full bg-indigo-500/20 border border-indigo-400 flex items-center justify-center node-pulse">
+                                    <svg class="w-6 h-6 text-indigo-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="flex-1 px-4">
+                                    <div class="w-full h-1 bg-indigo-900 relative rounded-full overflow-hidden">
+                                        <div class="absolute inset-0 bg-indigo-400 animate-[shimmer_2s_infinite]"></div>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center node-pulse">
+                                    <svg class="w-6 h-6 text-emerald-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>
+                                </div>
+                                <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-indigo-400 font-black tracking-widest uppercase">Identity Syncing</div>
+                            </div>
+                        </div>
+                        <div class="pt-4 mt-auto">
+                            <p class="text-[9px] text-gray-500 italic mb-2">근거: 심리학 ‘자기 참조 효과(Self-Reference Effect)’</p>
+                            <p class="text-sm text-white font-bold leading-relaxed">얼굴 합성 기술을 도입하여 사용자가 직접 역사 속 주인공이 되어 ‘연대감’을 느끼게 합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. [목표] (Trend Line with Sources) -->
+                <div class="strategy-box group h-full flex flex-col">
+                    <div class="absolute top-8 right-8 opacity-20 group-hover:opacity-100 transition-all duration-500">
+                        <svg class="w-12 h-12 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <span class="label-badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">목표</span>
+                    <h4 class="text-2xl font-black mb-6 text-white leading-tight">위기의 ‘대학’을 넘어,<br>혁신의 ‘도시 상징’으로</h4>
+                    <div class="space-y-6 flex-1">
+                        <p class="text-sm text-gray-300 leading-relaxed font-light">수도권 집중으로 거점 국립대 브랜드 이미지가 노후화되고 있습니다. 부산대 합격자 4명 중 3명이 입학을 포기하는 위기의 상황입니다.</p>
+
+                        <!-- PNU Drop-out Trend Graph (Updated with FACT Data) -->
+                        <div class="graph-container p-5 bg-black/40 rounded-2xl border border-white/5 transition-all duration-500">
+                            <p class="text-[10px] text-red-400 font-black mb-4 uppercase tracking-tighter flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                                부산대 수시·정시 합산 등록 포기율 추이
+                            </p>
+                            <!-- Updated SVG: Fact-based Rising Trend (20% -> 73%) -->
+                            <svg class="w-full h-24 overflow-visible" viewBox="0 0 100 40">
+                                <!-- Grid Lines -->
+                                <line x1="10" y1="10" x2="100" y2="10" stroke="white" stroke-opacity="0.1" stroke-dasharray="2" />
+                                <line x1="10" y1="25" x2="100" y2="25" stroke="white" stroke-opacity="0.1" stroke-dasharray="2" />
+
+                                <!-- Y-axis Labels -->
+                                <text x="0" y="11" font-size="3" fill="#9ca3af" font-weight="bold">70%</text>
+                                <text x="0" y="26" font-size="3" fill="#9ca3af" font-weight="bold">30%</text>
+
+                                <!-- Rising Graph Path (Data: 2010:24% -> 2015:32% -> 2018:45% -> 2021:62% -> 2025:73.1%) -->
+                                <path d="M10 28 L30 25 L50 20 L75 13 L100 9" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" class="trend-path" />
+
+                                <!-- Data Points -->
+                                <circle cx="10" cy="28" r="1.5" fill="#6b7280" />
+                                <text x="10" y="24" font-size="3" fill="#6b7280" text-anchor="middle">24.2%</text>
+
+                                <circle cx="30" cy="25" r="1.5" fill="#6b7280" />
+
+                                <circle cx="50" cy="20" r="1.5" fill="#ef4444" />
+
+                                <circle cx="75" cy="13" r="1.5" fill="#ef4444" />
+                                <text x="72" y="9" font-size="3" fill="#ef4444" text-anchor="middle">58%</text>
+
+                                <!-- 2025 Focus Point -->
+                                <circle cx="100" cy="9" r="3" fill="#ef4444" stroke="white" stroke-width="1" class="animate-pulse" />
+                                <text x="100" y="5" font-size="4" fill="#ef4444" font-weight="900" text-anchor="middle">73.1%</text>
+
+                                <!-- X-axis Labels -->
+                                <text x="10" y="45" font-size="4" fill="#6b7280" text-anchor="middle">2010</text>
+                                <text x="30" y="45" font-size="4" fill="#6b7280" text-anchor="middle">2015</text>
+                                <text x="50" y="45" font-size="4" fill="#6b7280" text-anchor="middle">2018</text>
+                                <text x="75" y="45" font-size="4" fill="#ef4444" font-weight="bold" text-anchor="middle">2021</text>
+                                <text x="100" y="45" font-size="4" fill="#ef4444" font-weight="900" text-anchor="middle">2025</text>
+                            </svg>
+                        </div>
+                        <div class="pt-4 mt-auto">
+                            <p class="text-[9px] text-gray-500 italic mb-1 leading-tight">
+                                출처: 종로학원, 대학알리미 (수시·정시 합산 분석)<br>
+                                관련보도: 한국일보 "부산대도 4명 중 3명 입학 포기... 지방대들 '눈물의 신입생 유치'"
+                            </p>
+                            <p class="text-sm text-white font-bold leading-relaxed">학생들이 자발적으로 공유하는 ‘힙한 콘텐츠’를 통해 부산대의 브랜드 매력도를 재정의합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing Summaries (Linking to outcomes) - RESTORED -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-left pt-10 border-t border-white/5">
                 <div class="p-12 bg-white/5 rounded-[3.5rem] border border-white/10 hover:border-indigo-500 transition-all duration-500 h-full flex flex-col">
+                    <!-- Moved Keyword Label to Top & Translated & Resized -->
+                    <span class="text-4xl font-black text-indigo-500/50 tracking-tighter uppercase mb-6 block">시각화</span>
                     <div class="intent-visual">
                         <svg width="200" height="140" viewBox="0 0 200 140">
                             <g transform="translate(0, 30)">
@@ -497,15 +815,19 @@
                     <p class="text-gray-400 text-sm leading-relaxed text-justify font-light opacity-80">방대한 <span class="font-bold">역사 자료</span>가 있어도 텍스트 중심의 사료에 흥미를 느끼는 대중은 적습니다. 우리는 '지루함'을 시각적 엔터테인먼트로 전환합니다.</p>
                 </div>
 
-                <!-- Intention 2 -->
                 <div class="p-12 bg-indigo-600 rounded-[3.5rem] shadow-3xl transform hover:-translate-y-6 transition-all duration-500 h-full flex flex-col">
+                    <!-- Moved Keyword Label to Top & Translated & Resized -->
+                    <span class="text-4xl font-black text-indigo-200/50 tracking-tighter uppercase mb-6 block">몰입</span>
                     <div class="intent-visual">
                         <svg width="180" height="140" viewBox="0 0 200 140">
-                            <circle cx="40" cy="80" r="15" fill="white" fill-opacity="0.2"/><circle cx="160" cy="80" r="15" fill="white" fill-opacity="0.2"/>
+                            <circle cx="40" cy="80" r="15" fill="white" fill-opacity="0.2"/>
+                            <path d="M 20 110 Q 40 90 60 110" fill="white" fill-opacity="0.2"/>
+                            <circle cx="160" cy="80" r="15" fill="white" fill-opacity="0.2"/>
+                            <path d="M 140 110 Q 160 90 180 110" fill="white" fill-opacity="0.2"/>
                             <g transform="translate(75, 20)">
+                                <circle cx="25" cy="30" r="35" stroke="white" stroke-width="1" stroke-dasharray="4" class="animate-pulse" opacity="0.5"/>
                                 <circle cx="25" cy="30" r="25" fill="white" stroke="white" stroke-width="3"/>
                                 <path d="M0 100 Q25 60 50 100" fill="white"/>
-                                <circle cx="25" cy="30" r="35" stroke="white" stroke-width="1" stroke-dasharray="4" class="animate-pulse"/>
                                 <text x="25" y="-5" text-anchor="middle" font-size="12" fill="white" font-weight="900">HERO</text>
                             </g>
                         </svg>
@@ -514,174 +836,311 @@
                     <p class="text-indigo-100 text-sm leading-relaxed text-justify font-light opacity-90">남의 이야기가 아닌 '나의 이야기'가 될 때 몰입은 극대화됩니다. 직접 주인공이 되는 과정은 그 시대를 가장 깊게 이해하게 만듭니다.</p>
                 </div>
 
-                <!-- Intention 3: PNU Branding (White Stone Building - Humanities Hall Vibe) -->
                 <div class="p-12 bg-white/5 rounded-[3.5rem] border border-white/10 hover:border-emerald-500 transition-all duration-500 h-full flex flex-col group overflow-hidden relative">
-                    <!-- Background Image (White Stone University Building - PNU Vibe) -->
                     <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-all z-0"></div>
-                    <!-- PNU Humanities Hall Vibe Image -->
-                    <img src="https://images.unsplash.com/photo-1549650170-4cb670df594b?q=80&w=2000&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 z-[-1]" alt="PNU Humanities Building Style">
+                    <!-- Moved Keyword Label to Top & Translated & Resized -->
+                    <span class="relative z-10 text-4xl font-black text-emerald-400/50 tracking-tighter uppercase mb-6 block">브랜딩</span>
+                    <div class="intent-visual relative z-10 w-full flex items-center justify-center gap-6">
+                        <div class="relative group/school cursor-pointer">
+                            <div class="w-24 h-24 bg-gradient-to-br from-blue-50 to-white rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.3)] transform transition-all duration-300 hover:scale-110 hover:-rotate-3 flex items-center justify-center relative z-10 border-4 border-white ring-4 ring-blue-500/10">
+                                <svg class="w-14 h-14 drop-shadow-md transform group-hover/school:scale-105 transition-transform" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 45L50 20L85 45V85C85 87.7614 82.7614 90 80 90H20C17.2386 90 15 87.7614 15 85V45Z" fill="#ffffff" stroke="#2563eb" stroke-width="4" stroke-linejoin="round"/>
+                                    <path d="M15 45L50 20L85 45" fill="#eff6ff"/>
+                                    <rect x="35" y="30" width="30" height="12" rx="4" fill="#2563eb"/>
+                                    <text x="50" y="39" font-family="'Noto Sans KR', sans-serif" font-weight="900" font-size="8" fill="white" text-anchor="middle">PNU</text>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1 max-w-[100px] h-12 relative flex items-center justify-center">
+                             <svg class="w-full h-full text-blue-400/70" viewBox="0 0 100 20" preserveAspectRatio="none" overflow="visible">
+                                <line x1="0" y1="10" x2="88" y2="10" stroke="currentColor" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round" class="animate-[flow-dash_1s_linear_infinite]" />
+                                <path d="M88 4 L100 10 L88 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <div class="w-10 h-10 bg-red-500/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-red-500/30 transform hover:scale-110 transition-transform shadow-lg cursor-pointer group/yt">
+                                <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                            </div>
+                            <div class="w-10 h-10 bg-pink-500/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-pink-500/30 transform hover:scale-110 transition-transform shadow-lg cursor-pointer group/insta">
+                                <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        <h4 class="text-2xl font-black mb-6 leading-tight italic text-emerald-400">부산대 관심 제고,<br>강력한 브랜드의 힘</h4>
+                        <p class="text-gray-100 text-sm leading-relaxed text-justify font-light opacity-100">트렌디한 결과물은 SNS를 통해 확산됩니다. 이는 부산대 브랜드 이미지를 각인시키는 실질적 브랜딩 자산이 됩니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    <div class="intent-visual relative z-10">
-                        <!-- Floating Crown (Center) -->
-                        <div class="crown-float transform scale-150">
-                            <svg width="80" height="60" viewBox="0 0 60 40">
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                                </filter>
-                                <path d="M5 35 L15 5 L30 25 L45 5 L55 35 Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round" filter="url(#glow)"/>
-                                <circle cx="5" cy="35" r="3" fill="#fbbf24"/>
-                                <circle cx="55" cy="35" r="3" fill="#fbbf24"/>
-                                <circle cx="15" cy="5" r="3" fill="#fbbf24"/>
-                                <circle cx="30" cy="25" r="3" fill="#fbbf24"/>
-                                <circle cx="45" cy="5" r="3" fill="#fbbf24"/>
+    <!-- [Page 5] Team Identity -->
+    <section id="team-identity" class="section-padding bg-gray-5 dark:bg-slate-900 transition-colors duration-500 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+            <div class="text-center mb-20">
+                <div class="inline-block px-4 py-1 mb-4 text-[10px] font-black tracking-[0.4em] text-indigo-500 border border-indigo-500/30 rounded-full uppercase">Team Philosophy</div>
+                <h3 class="text-4xl sm:text-6xl font-black tracking-tighter leading-tight dark:text-white mb-4">팀 <span class="text-indigo-600 dark:text-indigo-400">'경불재'</span>의 목표</h3>
+                <p class="text-xl sm:text-2xl text-gray-400 dark:text-gray-500 font-light">"경영의 <span class="font-bold text-gray-800 dark:text-gray-200">눈</span>, 인문의 <span class="font-bold text-gray-800 dark:text-gray-200">가슴</span>, 공학의 <span class="font-bold text-gray-800 dark:text-gray-200">기술</span>로<br>부산을 다시 짓다"</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5zo mx-auto relative">
+                <div class="hidden md:block absolute top-12 left-[16%] w-[68%] h-[2px] border-t-2 border-dashed border-gray-300 dark:border-slate-700 z-0"></div>
+                <div class="relative z-10 flex flex-col items-center text-center group">
+                    <div class="w-24 h-24 rounded-3xl bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center mb-6 border border-gray-100 dark:border-slate-700 group-hover:-translate-y-2 transition-transform duration-300">
+                        <svg class="w-10 h-10 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </div>
+                    <h4 class="text-xl font-bold dark:text-white mb-2">경영의 눈</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-light leading-relaxed px-6">냉철한 이성으로<br>시대의 흐름을 읽고<br>프로젝트의 방향을 제시합니다.</p>
+                </div>
+                <div class="relative z-10 flex flex-col items-center text-center group">
+                    <div class="w-24 h-24 rounded-3xl bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center mb-6 border border-gray-100 dark:border-slate-700 group-hover:-translate-y-2 transition-transform duration-300 delay-75">
+                        <svg class="w-10 h-10 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                    </div>
+                    <h4 class="text-xl font-bold dark:text-white mb-2">인문의 가슴</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-light leading-relaxed px-6">따뜻한 감성으로<br>역사 속 사람을 이해하고<br>깊이 있는 울림을 전합니다.</p>
+                </div>
+                <div class="relative z-10 flex flex-col items-center text-center group">
+                    <div class="w-24 h-24 rounded-3xl bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center mb-6 border border-gray-100 dark:border-slate-700 group-hover:-translate-y-2 transition-transform duration-300 delay-150">
+                        <svg class="w-10 h-10 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
+                    </div>
+                    <h4 class="text-xl font-bold dark:text-white mb-2">공학의 기술</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-light leading-relaxed px-6">견고한 논리로<br>상상을 현실로 구현하여<br>새로운 부산을 건축합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [Page 6] Team Role (MATCHING IMAGE image_60c8ce.png) -->
+    <section id="team" class="section-padding bg-gray-50 dark:bg-[#0b1120] transition-colors duration-500 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+            <div class="mb-20 text-right">
+                <h2 class="text-sm font-black text-slate-400 dark:text-slate-500 tracking-[0.5em] uppercase mb-8">05 Project Team</h2>
+                <h3 class="text-5xl sm:text-7xl font-black tracking-tighter leading-tight dark:text-white">전공 역량의 최적화,<br><span class="text-indigo-600 dark:text-indigo-400">명확한 역할 분담</span></h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Biz Card -->
+                <div class="group relative bg-white dark:bg-slate-800 rounded-[2.5rem] p-10 shadow-xl hover:shadow-2xl border border-slate-100 dark:border-slate-700 transition-all duration-500 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl font-black shadow-lg shadow-indigo-200 dark:shadow-none">Biz</div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 text-[10px] font-black px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-800 uppercase">경영학과</span>
+                                    <span class="text-base font-black text-slate-800 dark:text-slate-200">문지현</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Changed icon from user to eye -->
+                        <div class="w-12 h-12 opacity-20 group-hover:opacity-40 transition-opacity">
+                            <svg class="w-full h-full text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
                             </svg>
                         </div>
+                    </div>
+                    <h4 class="text-2xl font-black mb-1 text-slate-900 dark:text-white leading-tight">Strategic Planner</h4>
+                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-8">Strategy & Analysis</p>
 
-                        <!-- Twinkling Stars -->
-                        <div class="absolute top-4 right-10 text-3xl animate-pulse text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">✨</div>
-                        <div class="absolute bottom-10 left-10 text-xl animate-pulse delay-75 text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]">✦</div>
-                        <div class="absolute top-10 left-16 text-sm animate-pulse delay-150 text-white opacity-80">★</div>
+                    <div class="mb-8 p-5 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border-l-4 border-indigo-500 relative">
+                        <p class="text-sm text-slate-700 dark:text-slate-300 font-bold leading-relaxed italic">
+                            "데이터 흐름을 읽어<br>프로젝트의 나침반을 제시하다"
+                        </p>
                     </div>
 
-                    <div class="relative z-10">
-                        <h4 class="text-2xl font-black mb-6 leading-tight italic text-emerald-400 drop-shadow-lg">부산대 관심 제고,<br>강력한 브랜드의 힘</h4>
-                        <p class="text-gray-100 text-sm leading-relaxed text-justify font-light opacity-100 drop-shadow-md">트렌디한 결과물은 SNS를 통해 확산됩니다. 이는 부산대 브랜드 이미지를 각인시키는 실질적 브랜딩 자산이 됩니다.</p>
+                    <div class="mb-10">
+                        <p class="text-[10px] font-black text-indigo-500 mb-4 uppercase tracking-widest">CORE COMPETENCY (전공 활용)</p>
+                        <p class="text-[13px] text-slate-600 dark:text-slate-400 font-light666 leading-relaxed text-justify">
+                            경영학의 <span class="font-black text-indigo-600 dark:text-indigo-400">전략적 기획력</span>과 <span class="font-black text-indigo-600 dark:text-indigo-400">트렌드 해석 능력</span>을 활용했습니다. 방대한 역사 데이터 속에서 <span class="font-black text-indigo-600 dark:text-indigo-400">핵심 키워드</span>를 포착하고, 이를 바탕으로 서비스가 추구해야 할 <span class="font-black text-indigo-600 dark:text-indigo-400">기획 의도와 핵심 가치(Core Value)를 수립</span>했습니다.
+                        </p>
+                    </div>
+
+                    <div class="mt-auto">
+                        <p class="text-[10px] font-black text-slate-500 mb-3 uppercase tracking-widest">PRIMARY RESPONSIBILITY (역할)</p>
+                        <ul class="text-[12px] text-slate-500 dark:text-slate-400 space-y-2 font-medium">
+                            <li class="flex items-start gap-2"><span class="text-indigo-500">•</span> 데이터 흐름 분석 및 인사이트 도출</li>
+                            <li class="flex items-start gap-2"><span class="text-indigo-500">•</span> 프로젝트 방향성 및 핵심 기획 의도 설정</li>
+                            <li class="flex items-start gap-2"><span class="text-indigo-500">•</span> 기획의도에 따른 기대 효과(Impact) 분석</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tech Card -->
+                <div class="group relative bg-white dark:bg-slate-800 rounded-[2.5rem] p-10 shadow-xl hover:shadow-2xl border border-slate-100 dark:border-slate-700 transition-all duration-500 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-violet-600 text-white flex items-center justify-center text-xl font-black shadow-lg shadow-violet-200 dark:shadow-none">Tech</div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <!-- Changed to 불어불문학과 -->
+                                    <span class="bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 text-[10px] font-black px-2.5 py-1 rounded-full border border-violet-100 dark:border-violet-800">불어불문학과 / 산업AI 연계전공</span>
+                                    <span class="text-base font-black text-slate-800 dark:text-slate-200 whitespace-nowrap">송찬호</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 opacity-20 group-hover:opacity-40 transition-opacity">
+                            <svg class="w-full h-full text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg>
+                        </div>
+                    </div>
+                    <!-- Changed to Technical Interpreter -->
+                    <h4 class="text-2xl font-black mb-1 text-slate-900 dark:text-white leading-tight">Technical Interpreter</h4>
+                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-8">ENGINE DEVELOPMENT</p>
+
+                    <div class="mb-8 p-5 bg-violet-50 dark:bg-violet-900/20 rounded-2xl border-l-4 border-violet-500 relative">
+                        <p class="text-sm text-slate-700 dark:text-slate-300 font-bold leading-relaxed italic">
+                            "기획의 언어를 정확한<br>기술 언어로 통역하다"
+                        </p>
+                    </div>
+
+                    <div class="mb-10">
+                        <p class="text-[10px] font-black text-violet-500 mb-4 uppercase tracking-widest">CORE COMPETENCY (전공 활용)</p>
+                        <p class="text-[13px] text-slate-600 dark:text-slate-400 font-light leading-relaxed text-justify">
+                            불문학의 <span class="font-black text-violet-600 dark:text-violet-400">인문 데이터 이해력</span>과 산업AI 전공 지식을 <span class="font-black text-violet-600 dark:text-violet-400">활용했습니다</span>. <span class="font-black text-violet-600 dark:text-violet-400">팀원 간의 의사소통과 기획서를 통해 프로젝트가 필요한 시스템 요소를 정확히 파악하고</span>, 이를 AI가 처리할 수 있는 <span class="font-black text-violet-600 dark:text-violet-400">컴퓨터 언어(Code & Prompt)로 변환</span>하여 시스템을 구현했습니다.
+                        </p>
+                    </div>
+
+                    <div class="mt-auto">
+                        <p class="text-[10px] font-black text-slate-500 mb-3 uppercase tracking-widest">PRIMARY RESPONSIBILITY (역할)</p>
+                        <ul class="text-[12px] text-slate-500 dark:text-slate-400 space-y-2 font-medium">
+                            <li class="flex items-start gap-2"><span class="text-violet-500">•</span> 프롬프트 엔지니어링 (기획 의도의 기술적 번역)</li>
+                            <li class="flex items-start gap-2"><span class="text-violet-500">•</span> 핵심 서비스 엔진 개발 및 최적화</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dir Card -->
+                <div class="group relative bg-white dark:bg-slate-800 rounded-[2.5rem] p-10 shadow-xl hover:shadow-2xl border border-slate-100 dark:border-slate-700 transition-all duration-500 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl font-black shadow-lg shadow-emerald-200 dark:shadow-none">Dir</div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-100 dark:border-emerald-800 uppercase">재료공학부</span>
+                                    <span class="text-base font-black text-slate-800 dark:text-slate-200">최지성</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 opacity-20 group-hover:opacity-40 transition-opacity">
+                            <svg class="w-full h-full text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-black mb-1 text-slate-900 dark:text-white leading-tight">Project Director</h4>
+                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-8">WEB ARCHITECTURE & PLANNING</p>
+
+                    <div class="mb-8 p-5 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border-l-4 border-emerald-500 relative">
+                        <p class="text-sm text-slate-700 dark:text-slate-300 font-bold leading-relaxed italic">
+                            "기획의 의도를 견고한<br>웹 인터페이스로 구현하다"
+                        </p>
+                    </div>
+
+                    <div class="mb-10">
+                        <p class="text-[10px] font-black text-emerald-500 mb-4 uppercase tracking-widest">CORE COMPETENCY (전공 활용)</p>
+                        <p class="text-[13px] text-slate-600 dark:text-slate-400 font-light leading-relaxed text-justify">
+                            재료공학의 <span class="font-black text-emerald-600 dark:text-emerald-400">공학적 분석 사고</span>를 적용했습니다. <span class="font-black text-emerald-600 dark:text-emerald-400">설정된</span> 기획 의도가 사용자에게 명확히 전달되도록, 메인 포털의 <span class="font-black text-emerald-600 dark:text-emerald-400">정보 구조(Structure)와 인터페이스</span>를 논리적으로 설계하고 구현했습니다. 기획서의 내용을 웹상에 효과적으로 배치하는 역할을 수행했습니다.
+                        </p>
+                    </div>
+
+                    <div class="mt-auto">
+                        <p class="text-[10px] font-black text-slate-500 mb-3 uppercase tracking-widest">PRIMARY RESPONSIBILITY (역할)</p>
+                        <ul class="text-[12px] text-slate-500 dark:text-slate-400 space-y-2 font-medium">
+                            <li class="flex items-start gap-2"><span class="text-indigo-500">•</span> 메인 포털 인터페이스 구조화 및 구현</li>
+                            <li class="flex items-start gap-2"><span class="text-emerald-500">•</span> 기획 의도의 시각적 형상화 및 디자인</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- [Page 4] Team Role Allocation (Added as a continuation) -->
-    <section id="team" class="section-padding bg-gray-50 dark:bg-[#0b1120] transition-colors duration-500 relative overflow-hidden">
-        <!-- Background Decoration -->
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-indigo-50/50 dark:bg-indigo-900/10 skew-x-12 transform origin-top-right"></div>
-        <div class="absolute bottom-0 left-0 w-96 h-96 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-full blur-3xl"></div>
-
-        <div class="max-w-7xl mx-auto px-8 relative z-10">
-            <div class="mb-24 text-right">
-                <h2 class="text-sm font-black text-slate-400 dark:text-slate-500 tracking-[0.5em] uppercase mb-8">04 Project Team</h2>
-                <h3 class="text-5xl sm:text-7xl font-black tracking-tighter leading-tight dark:text-white">
-                    <span class="text-indigo-600 dark:text-indigo-400">완벽한 조화</span>,<br>
-                    우리의 역할 분담
-                </h3>
+    <!-- [Page 7] Collaboration -->
+    <section id="collab" class="section-padding bg-slate-50 dark:bg-slate-900/50 transition-colors duration-500 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="mb-16 text-center">
+                <h2 class="text-sm font-black text-indigo-500 dark:text-indigo-400 tracking-[0.5em] uppercase mb-8">06 Collaboration Process</h2>
+                <h3 class="text-4xl sm:text-6xl font-black tracking-tighter leading-tight dark:text-white mb-6">"치열하게 모이고,<br>끊임없이 떠들다"</h3>
+                <p class="text-lg text-gray-500 dark:text-gray-400 font-light">서로 다른 전공의 언어를 하나로 맞추기 위한<br><span class="text-indigo-600 font-bold">수많은 밤샘과 토론의 기록들</span></p>
             </div>
 
-            <!-- Role Cards Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="relative w-full max-w-5xl mx-auto h-[600px] md:h-[550px] mt-10">
+                <!-- Background decorative elements -->
+                <div class="absolute inset-0 bg-white/40 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-gray-300 dark:border-gray-700 backdrop-blur-sm mx-4"></div>
 
-                <!-- Role 1: PM & Planning -->
-                <div class="group relative bg-white dark:bg-slate-800 rounded-[2rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 dark:border-slate-700 overflow-hidden">
-                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
+                <!-- Image 1: Whiteboard (Ideation) - Tilted Left -->
+                <div class="absolute top-10 left-4 md:left-20 w-64 md:w-80 bg-white dark:bg-gray-800 p-3 pb-12 shadow-2xl transform -rotate-6 hover:rotate-0 hover:z-30 transition-all duration-500 z-10 rounded-sm group cursor-pointer">
+                    <div class="overflow-hidden bg-gray-100 dark:bg-gray-900 h-48 md:h-56 relative border border-gray-200 dark:border-gray-700">
+                        <img src="https://i.postimg.cc/tJsvgTJz/irwyowryig.png" alt="Brainstorming Board" class="w-full h-full object-cover filter contrast-125 group-hover:scale-110 transition-transform duration-700">
                     </div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-6 text-xl font-black shadow-inner">PM</div>
-                        <h4 class="text-2xl font-bold mb-2 dark:text-white">기획 & 총괄</h4>
-                        <p class="text-xs font-bold text-indigo-500 mb-6 uppercase tracking-wider">Project Manager</p>
-                        <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400 font-light mb-8">
-                            <li class="flex items-start gap-2"><span class="text-indigo-500 font-bold">·</span> 전체 프로젝트 일정 관리</li>
-                            <li class="flex items-start gap-2"><span class="text-indigo-500 font-bold">·</span> 서비스 기획 및 시나리오 작성</li>
-                            <li class="flex items-start gap-2"><span class="text-indigo-500 font-bold">·</span> 발표 자료 및 문서화</li>
-                        </ul>
-                        <div class="pt-6 border-t border-gray-100 dark:border-slate-700 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-600 overflow-hidden">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Member" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <div class="text-sm font-black dark:text-white">김부산</div>
-                                <div class="text-[10px] text-gray-400">산업공학과 20</div>
-                            </div>
+                    <p class="font-myeongjo absolute bottom-4 left-0 w-full text-center text-gray-600 dark:text-gray-300 font-bold text-lg">날것의 아이디어</p>
+                    <!-- Tape effect -->
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-20 bg-yellow-200/50 dark:bg-yellow-500/30 rotate-3 backdrop-blur-sm shadow-sm"></div>
+                </div>
+
+                <!-- Image 2: Notion/Docs (System) - Centered/Back -->
+                <div class="absolute top-24 left-1/2 -translate-x-1/2 w-72 md:w-[28rem] bg-white dark:bg-gray-800 p-2 shadow-xl transform rotate-0 hover:scale-105 hover:z-30 transition-all duration-500 z-0 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer">
+                    <div class="overflow-hidden bg-gray-50 dark:bg-gray-900 h-52 md:h-72 rounded-lg border border-gray-100 dark:border-gray-800">
+                         <img src="https://i.postimg.cc/5YXrd9Qb/vjhsdjs.png" alt="Notion Planning" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 rounded-b-lg">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs text-gray-400 font-mono">Project_Timeline_Final.notion</p>
+                            <span class="text-[10px] bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded">Planning</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Role 2: Design -->
-                <div class="group relative bg-white dark:bg-slate-800 rounded-[2rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 dark:border-slate-700 overflow-hidden">
-                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                <!-- Image 3: Meeting (Communication) - Tilted Right -->
+                <div class="absolute bottom-12 md:bottom-20 right-4 md:right-20 w-64 md:w-80 bg-white dark:bg-gray-800 p-3 pb-12 shadow-2xl transform rotate-6 hover:rotate-0 hover:z-30 transition-all duration-500 z-20 rounded-sm group cursor-pointer">
+                    <div class="overflow-hidden bg-gray-100 dark:bg-gray-900 h-48 md:h-56 relative border border-gray-200 dark:border-gray-700">
+                         <!-- Changed image to Notion photo as requested -->
+                         <img src="https://i.postimg.cc/5YXrd9Qb/vjhsdjs.png" alt="Team Discussion" class="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700">
                     </div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 rounded-2xl bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-400 flex items-center justify-center mb-6 text-xl font-black shadow-inner">UI</div>
-                        <h4 class="text-2xl font-bold mb-2 dark:text-white">디자인 & UX</h4>
-                        <p class="text-xs font-bold text-pink-500 mb-6 uppercase tracking-wider">Product Designer</p>
-                        <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400 font-light mb-8">
-                            <li class="flex items-start gap-2"><span class="text-pink-500 font-bold">·</span> 웹/모바일 UI 인터페이스 디자인</li>
-                            <li class="flex items-start gap-2"><span class="text-pink-500 font-bold">·</span> 3D 에셋 및 캐릭터 디자인</li>
-                            <li class="flex items-start gap-2"><span class="text-pink-500 font-bold">·</span> 사용자 경험(UX) 최적화</li>
-                        </ul>
-                        <div class="pt-6 border-t border-gray-100 dark:border-slate-700 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-600 overflow-hidden">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Member" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <div class="text-sm font-black dark:text-white">이디자</div>
-                                <div class="text-[10px] text-gray-400">시각디자인과 21</div>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="font-myeongjo absolute bottom-4 left-0 w-full text-center text-gray-600 dark:text-gray-300 font-bold text-lg">언어를 맞추는 시간</p>
+                    <!-- Pin effect -->
+                    <div class="absolute -top-4 right-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-red-500 shadow-lg border-2 border-white/50 ring-2 ring-black/10"></div>
                 </div>
 
-                <!-- Role 3: Frontend -->
-                <div class="group relative bg-white dark:bg-slate-800 rounded-[2rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 dark:border-slate-700 overflow-hidden">
-                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+                <!-- Image 4: Talking (New) - Bottom Left -->
+                <div class="absolute bottom-4 left-4 md:left-32 w-60 md:w-72 bg-white dark:bg-gray-800 p-2 shadow-2xl transform -rotate-3 hover:rotate-0 hover:z-40 transition-all duration-500 z-30 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer">
+                    <div class="overflow-hidden bg-gray-100 dark:bg-gray-900 h-40 md:h-48 relative rounded-md border border-gray-100 dark:border-gray-600">
+                        <img src="img/talking.jpg" alt="Continuous Dialogue" class="w-full h-full object-cover filter contrast-110 group-hover:scale-110 transition-transform duration-700" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=talking.jpg'">
                     </div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 rounded-2xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-6 text-xl font-black shadow-inner">FE</div>
-                        <h4 class="text-2xl font-bold mb-2 dark:text-white">프론트엔드</h4>
-                        <p class="text-xs font-bold text-sky-500 mb-6 uppercase tracking-wider">Web Developer</p>
-                        <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400 font-light mb-8">
-                            <li class="flex items-start gap-2"><span class="text-sky-500 font-bold">·</span> 인터랙티브 웹 페이지 구현</li>
-                            <li class="flex items-start gap-2"><span class="text-sky-500 font-bold">·</span> 반응형 UI 및 애니메이션 개발</li>
-                            <li class="flex items-start gap-2"><span class="text-sky-500 font-bold">·</span> 클라이언트 성능 최적화</li>
-                        </ul>
-                        <div class="pt-6 border-t border-gray-100 dark:border-slate-700 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-600 overflow-hidden">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jude" alt="Member" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <div class="text-sm font-black dark:text-white">박코딩</div>
-                                <div class="text-[10px] text-gray-400">정보컴퓨터공학부 19</div>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="font-myeongjo text-center text-gray-600 dark:text-gray-300 font-bold text-sm mt-3 mb-1">끊임없는 소통</p>
+                    <!-- Tape effect -->
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-12 bg-green-200/50 dark:bg-green-500/30 -rotate-90 backdrop-blur-sm shadow-sm"></div>
                 </div>
 
-                <!-- Role 4: Backend & AI -->
-                <div class="group relative bg-white dark:bg-slate-800 rounded-[2rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 dark:border-slate-700 overflow-hidden">
-                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm3 16H7v-2h8v2zm3-4H5v-2h13v2z"/></svg>
-                    </div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-6 text-xl font-black shadow-inner">AI</div>
-                        <h4 class="text-2xl font-bold mb-2 dark:text-white">백엔드 & AI</h4>
-                        <p class="text-xs font-bold text-emerald-500 mb-6 uppercase tracking-wider">AI Engineer</p>
-                        <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400 font-light mb-8">
-                            <li class="flex items-start gap-2"><span class="text-emerald-500 font-bold">·</span> 얼굴 인식(Face Swap) 모델 서빙</li>
-                            <li class="flex items-start gap-2"><span class="text-emerald-500 font-bold">·</span> 이미지 생성 AI 파이프라인 구축</li>
-                            <li class="flex items-start gap-2"><span class="text-emerald-500 font-bold">·</span> 서버 API 및 데이터베이스 관리</li>
-                        </ul>
-                        <div class="pt-6 border-t border-gray-100 dark:border-slate-700 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-600 overflow-hidden">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Robert" alt="Member" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <div class="text-sm font-black dark:text-white">최서버</div>
-                                <div class="text-[10px] text-gray-400">인공지능전공 22</div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Decorative Text Elements scattered (Chat bubbles) -->
+                <div class="absolute top-[40%] left-4 md:left-24 -translate-y-1/2 hidden md:flex animate-float">
+                     <div class="bg-white dark:bg-slate-700 px-4 py-2 rounded-2xl rounded-bl-none shadow-lg border border-gray-100 dark:border-gray-600 transform -rotate-6">
+                        <span class="font-myeongjo text-sm text-gray-600 dark:text-gray-300">"이거 구현 가능해요?"</span>
+                     </div>
                 </div>
+                <div class="absolute bottom-24 left-[20%] hidden md:flex animate-float-delayed z-20">
+                     <div class="bg-indigo-600 text-white px-4 py-2 rounded-2xl rounded-tr-none shadow-lg shadow-indigo-500/30 transform rotate-3">
+                        <span class="font-myeongjo text-sm">"기획 의도는 그게 아니에요!"</span>
+                     </div>
+                </div>
+                <div class="absolute top-24 right-10 md:right-32 hidden md:flex animate-float-fast">
+                     <div class="bg-white dark:bg-slate-700 px-4 py-2 rounded-2xl rounded-br-none shadow-lg border border-gray-100 dark:border-gray-600 transform rotate-6">
+                        <span class="font-myeongjo text-sm text-gray-600 dark:text-gray-300">"다시 정리해봅시다 🔥"</span>
+                     </div>
+                </div>
+            </div>
 
+            <div class="mt-8 text-center">
+                 <p class="text-[11px] text-gray-400 font-light tracking-wider">※ 실제 프로젝트 진행 과정의 기록 (Notion, 회의 판서, 협업 툴)</p>
             </div>
         </div>
     </section>
 
-    <footer class="bg-gray-100 py-24 text-center border-t border-gray-200 dark:bg-[#0f172a] dark:border-slate-800 transition-colors duration-500">
+    <footer class="bg-gray-100 py-24 text-center border-t border-gray-200 dark:bg-[#0f172a] dark:border-slate-800">
         <h2 class="font-black text-2xl text-gray-900 mb-4 tracking-tighter uppercase italic dark:text-gray-300">RE-PNU: 80 Years of PNU</h2>
-        <p class="text-gray-400 text-sm font-light dark:text-gray-600">&copy; 2026 RE-PNU PROJECT TEAM. ALL RIGHTS RESERVED.</p>
+        <p class="text-gray-400 text-sm font-light">&copy; 2026 RE-PNU PROJECT TEAM. ALL RIGHTS RESERVED.</p>
     </footer>
 
     <script>
@@ -691,6 +1150,19 @@
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) target.scrollIntoView({ behavior: 'smooth' });
             });
+        });
+
+        // Observer to trigger graphs
+        const graphObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.graph-container').forEach(graph => {
+            graphObserver.observe(graph);
         });
     </script>
 </body>
