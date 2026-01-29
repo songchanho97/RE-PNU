@@ -203,7 +203,8 @@
         }
         .cinema-overlay {
             position: absolute; inset: 0;
-            display: flex; flex-direction: column; justify-content: center; items-center;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; /* 수정됨: items-center -> align-items: center */
             background: rgba(0,0,0,0.3);
             color: white;
             text-align: center;
@@ -231,13 +232,13 @@
         /* Re-usable cinema screen style based on Feature 3 */
         .cinema-frame-shared {
             position: relative;
-            width: 16rem; /* w-64 */
-            height: 10rem; /* h-40 */
+            width: 16rem;
+            height: 10rem;
             background: #000;
             border-radius: 0.5rem;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.5s duration-500;
+            transition: transform 0.5s; /* 수정됨: duration-500 제거 */
         }
 
         /* New Intent Detail Styles */
